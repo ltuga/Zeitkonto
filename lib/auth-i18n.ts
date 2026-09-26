@@ -1,0 +1,32 @@
+import {messages} from './i18n';
+const rows:Record<string,[string,string,string]>={
+'A sair…':['Abmeldung läuft…','Signing out…','Çıkış yapılıyor…'],
+'Entrar na tua conta':['Bei deinem Konto anmelden','Sign in to your account','Hesabına giriş yap'],
+'Criar conta':['Konto erstellen','Create account','Hesap oluştur'],
+'Recuperar palavra-passe':['Passwort zurücksetzen','Reset password','Şifreyi sıfırla'],
+'Alterar palavra-passe':['Passwort ändern','Change password','Şifreyi değiştir'],
+'Palavra-passe':['Passwort','Password','Şifre'],
+'Confirmar palavra-passe':['Passwort bestätigen','Confirm password','Şifreyi doğrula'],
+'Usa pelo menos 12 caracteres.':['Verwende mindestens 12 Zeichen.','Use at least 12 characters.','En az 12 karakter kullan.'],
+'Entrar':['Anmelden','Sign in','Giriş yap'],
+'Enviar link':['Link senden','Send link','Bağlantı gönder'],
+'Guardar palavra-passe':['Passwort speichern','Save password','Şifreyi kaydet'],
+'Esqueci-me da palavra-passe':['Passwort vergessen','Forgot password','Şifremi unuttum'],
+'As palavras-passe não coincidem.':['Die Passwörter stimmen nicht überein.','Passwords do not match.','Şifreler eşleşmiyor.'],
+'Email ou palavra-passe incorretos.':['E-Mail oder Passwort falsch.','Incorrect email or password.','E-posta veya şifre hatalı.'],
+'Confirma o teu email antes de entrar.':['Bestätige deine E-Mail vor der Anmeldung.','Confirm your email before signing in.','Giriş yapmadan önce e-postanı doğrula.'],
+'Demasiadas tentativas. Aguarda alguns minutos.':['Zu viele Versuche. Warte einige Minuten.','Too many attempts. Wait a few minutes.','Çok fazla deneme. Birkaç dakika bekle.'],
+'Escolhe uma palavra-passe mais forte.':['Wähle ein stärkeres Passwort.','Choose a stronger password.','Daha güçlü bir şifre seç.'],
+'Escolhe uma palavra-passe diferente da anterior.':['Wähle ein anderes Passwort als zuvor.','Choose a different password from your previous one.','Öncekinden farklı bir şifre seç.'],
+'Não foi possível concluir. Tenta novamente ou verifica a configuração de email.':['Vorgang fehlgeschlagen. Erneut versuchen oder E-Mail-Konfiguration prüfen.','Could not complete the request. Try again or check email configuration.','İşlem tamamlanamadı. Tekrar dene veya e-posta ayarlarını kontrol et.'],
+'Não foi possível ligar. Tenta novamente.':['Verbindung fehlgeschlagen. Versuche es erneut.','Could not connect. Try again.','Bağlantı kurulamadı. Tekrar dene.'],
+'Não foi possível carregar a conta. Tenta novamente.':['Konto konnte nicht geladen werden. Versuche es erneut.','Could not load your account. Try again.','Hesap yüklenemedi. Tekrar dene.'],
+'Consulta o teu email para confirmar a conta antes de entrar.':['Prüfe deine E-Mails, um das Konto vor der Anmeldung zu bestätigen.','Check your email to confirm your account before signing in.','Giriş yapmadan önce hesabını doğrulamak için e-postanı kontrol et.'],
+'Se existir uma conta com este email, receberás um link de recuperação.':['Falls ein Konto mit dieser E-Mail existiert, erhältst du einen Link zum Zurücksetzen.','If an account exists with this email, you will receive a recovery link.','Bu e-posta ile bir hesap varsa sıfırlama bağlantısı alacaksın.'],
+'Palavra-passe atualizada.':['Passwort aktualisiert.','Password updated.','Şifre güncellendi.'],
+'O link expirou ou é inválido. Pede um novo email.':['Der Link ist abgelaufen oder ungültig. Fordere eine neue E-Mail an.','The link has expired or is invalid. Request a new email.','Bağlantının süresi dolmuş veya geçersiz. Yeni e-posta iste.'],
+'Sessão iniciada com email e palavra-passe. Os teus registos são privados.':['Mit E-Mail und Passwort angemeldet. Deine Einträge sind privat.','Signed in with email and password. Your records are private.','E-posta ve şifre ile giriş yapıldı. Kayıtların gizlidir.'],
+'Inicia sessão para aceder aos registos.':['Melde dich an, um deine Einträge zu sehen.','Sign in to access your records.','Kayıtlarına erişmek için giriş yap.'],
+'Inicia sessão para guardar.':['Melde dich zum Speichern an.','Sign in to save.','Kaydetmek için giriş yap.']
+};
+for(const [key,[de,en,tr]] of Object.entries(rows))messages[key]={de,en,tr};

@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {verifyIdentity} from '../lib/auth-identity.ts';
+const config={url:'https://example.supabase.co',key:'public-test-key'};
+const req=(token)=>new Request('https://example.com/api/state',{headers:token?{Authorization:token}:{}});
+const user={id:'123e4567-e89b-42d3-a456-426614174000',email:'person@example.com',email_confirmed_at:'2026-09-11T12:00:00Z'};
+test('rejects missing or malformed credentials without a provider call',async()=>{for(const token of [undefined,'Basic abc','Bearer ','Bearer a b'])assert.equal(await verifyIdentity(req(token),config,()=>{throw Error('must not call')}),null)});
+test('provider identity determines account ownership',async()=>{const request=req('Bearer example');request.headers.set('oai-authenticated-user-id','different-owner');const result=await verifyIdentity(request,config,async(url,options)=>{assert.equal(url,config.url+'/auth/v1/user');assert.equal(options.headers.Authorization,'Bearer example');assert.equal(options.cache,'no-store');return Response.json({...user,user_metadata:{owner:'someone-else'}})});assert.equal(result.owner,'supabase:'+user.id)});
+test('rejects invalid tokens and unconfirmed or anonymous users',async()=>{assert.equal(await verifyIdentity(req('Bearer bad'),config,async()=>new Response(null,{status:401})),null);for(const body of [{...user,email_confirmed_at:null},{...user,is_anonymous:true},{email:user.email}])assert.equal(await verifyIdentity(req('Bearer example'),config,async()=>Response.json(body)),null)});
+test('provider failure fails closed',async()=>{await assert.rejects(()=>verifyIdentity(req('Bearer example'),config,async()=>new Response(null,{status:503}))) });

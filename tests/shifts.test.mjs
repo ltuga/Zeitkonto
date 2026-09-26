@@ -1,0 +1,9 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {loadTs} from './load-ts.mjs';
+const {duration,overtimeMinutes,stateSchema,empty,balance}=await loadTs('lib/time.ts');
+const {resolveLanguage}=await loadTs('lib/language.ts');
+test('8h actual work with two unpaid breaks totaling 45 minutes',()=>{assert.equal(duration('06:00','14:45',45,0),0);assert.equal(duration('06:00','15:15',45,0),30);assert.equal(duration('06:00','14:00',45,0),-45);assert.equal(overtimeMinutes(525,15+30,0),0)});
+test('included break and overnight shifts preserve original calculation',()=>{assert.equal(duration('22:00','06:00',30,30),0);assert.equal(duration('22:00','07:00',30,30),60);assert.equal(duration('22:00','06:45',45,0),0)});
+test('legacy records and running shifts retain included break policy',()=>{const old={initial:0,restCost:8,records:[{id:'old',date:'2026-09-11',kind:'work',start:'22:00',end:'07:00',pause:30,delta:60,note:''}],active:{start:1000,pauseStart:null,paused:0}};const s=stateSchema.parse(old);assert.equal(s.includedPause,30);assert.equal(s.records[0].includedPause,30);assert.equal(s.active.includedPause,30);const next=stateSchema.parse({...s,includedPause:0,plannedPause:45});assert.equal(balance(next),0);assert.equal(next.records[0].includedPause,30);assert.equal(next.active.includedPause,30);assert.equal(stateSchema.safeParse({...empty,includedPause:45}).success,false)});
+test('language follows ordered device preferences and explicit selection wins',()=>{assert.equal(resolveLanguage(null,['de-DE','en']), 'de');assert.equal(resolveLanguage('auto',['pt-BR']), 'pt');assert.equal(resolveLanguage('auto',['fr-FR','tr-TR']), 'tr');assert.equal(resolveLanguage('pt',['de-DE']), 'pt');assert.equal(resolveLanguage(null,['es-ES']), 'en');assert.equal(resolveLanguage('invalid',[]), 'en')});

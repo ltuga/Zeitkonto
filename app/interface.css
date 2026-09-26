@@ -1,0 +1,126 @@
+/* Shared Zeitkonto interface: the reference design applies to every screen.
+   Semantic status colours and all existing controls remain available. */
+:root{--zk-blue:#0069ce;--zk-green:#00976e;--zk-pink:#e8007f;--zk-violet:#7845ee;--zk-shadow:0 8px 28px #244a710d}
+body{background:var(--page);color:var(--ink)}
+.zeit-reference .zeit-main{max-width:1050px;padding-inline:28px}
+.brand-home{border:0;padding:0;background:transparent;cursor:pointer}
+.zeit-reference .top{background:var(--page);border-bottom-color:transparent;box-shadow:none}
+.zeit-reference .top .brand{font-size:32px;letter-spacing:-1.2px}
+.zeit-reference .top .logo{width:42px;height:42px}.zeit-reference .top .logo svg{width:42px;height:42px}
+.zeit-reference .heading{padding:32px 0 24px;align-items:center}
+.zeit-reference .heading h1{font-size:clamp(28px,4vw,38px);letter-spacing:-1px}
+.zeit-reference .eyebrow{font-size:14px;letter-spacing:.6px;color:var(--primary-tone)}
+.zeit-reference :is(.panel,.action-card){border:1px solid var(--line);border-radius:24px;background:var(--surface);box-shadow:var(--zk-shadow)}
+.zeit-reference .panel{padding:26px}.zeit-reference h2{font-size:22px;line-height:1.3}.zeit-reference h3{line-height:1.4}
+.zeit-reference :is(.primary,.secondary),.zeit-auth :is(.primary,.secondary){min-height:48px;border-radius:14px;padding:13px 19px;line-height:1.4}
+.zeit-reference .primary,.zeit-auth .primary{background:var(--zk-blue);color:white;box-shadow:0 5px 14px #0069ce20}
+.zeit-reference .primary:hover,.zeit-auth .primary:hover{background:#0054af}
+.zeit-reference .secondary,.zeit-auth .secondary{background:var(--tint);color:var(--primary-tone)}
+.zeit-reference .secondary:hover,.zeit-auth .secondary:hover{background:var(--accent-tone)}
+:is(.zeit-reference,.zeit-auth) :is(input,textarea,[data-slot=select-trigger]),[data-slot=dialog-content] :is(input,textarea,[data-slot=select-trigger]){border:1px solid var(--line);border-radius:13px;background:var(--page);color:var(--ink);min-height:48px;font-size:16px;line-height:1.5}
+:is(.zeit-reference,.zeit-auth) :is(input,textarea):focus-visible,[data-slot=dialog-content] :is(input,textarea):focus-visible{outline:3px solid var(--primary-tone);outline-offset:2px}
+.zeit-reference label{font-size:14px;line-height:1.5}.zeit-reference .muted{font-size:14px;color:var(--soft)}
+.zeit-reference :is(.rule,.period-preview,.export-summary){background:var(--tint);border:0;border-radius:16px;color:var(--soft)}
+.zeit-reference .rule b{color:var(--ink)}
+.zeit-reference .pill{font-size:14px;padding:7px 12px;background:var(--tint);color:var(--primary-tone);white-space:normal}
+.zeit-reference .icon{width:46px;height:46px;border-radius:50%;background:var(--accent-tone);color:var(--primary-tone)}
+.zeit-reference .icon.purple{background:#e8f9f2;color:var(--zk-green)}
+.zeit-reference .positive{color:#00845f}.zeit-reference .negative{color:#ba344d}
+/* White menu, matching the navigation and colourful shortcuts in the reference. */
+.zeit-sidebar [data-slot=sidebar-inner],[data-slot=sidebar][data-mobile=true]{background:var(--surface)!important;color:var(--ink);border-right:1px solid var(--line)}
+.zeit-sidebar-header .brand{color:var(--primary-tone);font-size:24px}.zeit-sidebar-header .logo{background:transparent;color:var(--primary-tone)}
+.zeit-sidebar-header .logo svg{width:30px;height:30px}
+:is(.zeit-layout,[data-mobile=true]) [data-slot=sidebar-menu-button]{border-radius:14px;align-items:center;font-size:15px;min-height:50px}
+:is(.zeit-layout,[data-mobile=true]) [data-slot=sidebar-menu-button][data-active=true]{background:var(--accent-tone);color:var(--primary-tone)}
+:is(.zeit-layout,[data-mobile=true]) [data-slot=sidebar-menu-button]:hover{background:var(--tint);color:var(--ink)}
+.zeit-sidebar-footer{background:var(--surface);border-color:var(--line);color:var(--soft)}
+.nav-group-label{color:var(--soft);font-size:14px}.zeit-sidebar-header{border-bottom:1px solid var(--line)}
+/* The existing timer is a working card, with no empty second column. */
+.zeit-reference .workspace{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);align-items:start}
+.zeit-reference .clock-panel{scroll-margin-top:110px;border-top:4px solid var(--zk-blue)}
+.zeit-reference .timer{color:var(--primary-tone);font-size:clamp(40px,6vw,62px);font-weight:700;letter-spacing:-2px;margin-top:30px}
+.zeit-reference .workspace>aside{background:var(--tint);box-shadow:none;border:0}
+.zeit-reference .workspace>aside .rule{margin:0;padding:0}
+.zeit-reference .sync-status{background:transparent;border:0;color:var(--soft);font-size:14px;padding:10px 0;gap:10px}
+.zeit-reference .sync-status .text-button{color:var(--primary-tone);min-height:44px}
+.zeit-reference .reminder-banner{border-radius:18px;background:var(--tint);color:var(--ink);border-color:var(--line)}
+/* Calendar: spacious touch cells, consistent status colours and a detail card. */
+.zeit-reference .calendar-filters{padding:18px;background:var(--page);border-radius:18px}
+.zeit-reference .calendar-detail{border:0;border-radius:20px;background:var(--page);padding:22px}
+.zeit-reference .calendar-layout{gap:20px;align-items:start}
+.zeit-reference .leave-calendar .rdp-day button{border-radius:12px;min-height:44px;font-size:14px}
+.zeit-reference .leave-calendar .cal-vacation{background:#e8f9f2;box-shadow:inset 0 -4px var(--zk-green)}
+.zeit-reference .leave-calendar .cal-work{box-shadow:inset 0 -4px var(--zk-blue)}
+.zeit-reference .leave-calendar .cal-rest{background:#f0eaff;box-shadow:inset 0 -4px var(--zk-violet)}
+.zeit-reference .leave-calendar .cal-sick-note{background:#ffeaf3;box-shadow:inset 0 -4px var(--zk-pink)}
+.zeit-reference .legend-vacation:before{background:var(--zk-green)!important}.zeit-reference .legend-rest:before{background:var(--zk-violet)!important}
+.zeit-reference .legend-sick-note:before{background:var(--zk-pink)!important}
+.zeit-reference .calendar-legend{gap:14px;font-size:14px}.zeit-reference .calendar-legend span{font-size:14px}
+.zeit-reference .calendar-export{padding:18px;border:1px solid var(--line);border-radius:18px}
+/* Balances and monthly statistics use the same pastel metric cards as Today. */
+.zeit-reference .balance-overview{padding:0;background:transparent;border:0;gap:18px}
+.zeit-reference .balance-overview>section{background:#e9f9f1;border-radius:20px;padding:22px;min-width:0}
+.zeit-reference .balance-overview>section:nth-child(2){background:#eaf5ff}
+.zeit-reference .balance-overview h3{font-size:18px;margin-bottom:18px}
+.zeit-reference .balance-overview dl>div{padding:10px 0;gap:16px;line-height:1.5}
+.zeit-reference .balance-overview dd{font-size:16px;white-space:normal;text-align:right;overflow-wrap:anywhere}
+.zeit-reference .balance-free{border-top:1px solid var(--line);padding-top:16px!important;color:var(--ink)}
+.zeit-reference .balance-free dd{font-size:25px;letter-spacing:-.5px}
+.zeit-reference .monthly-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}
+.zeit-reference .monthly-grid>div{padding:19px 16px;background:#eaf5ff;border:0;border-radius:18px;min-width:0}
+.zeit-reference .monthly-grid>div:nth-child(3n+2){background:#e9f9f1}.zeit-reference .monthly-grid>div:nth-child(3n){background:#fff7e8}
+.zeit-reference .monthly-grid span{font-size:14px;line-height:1.5;color:var(--soft);display:block}
+.zeit-reference .monthly-grid strong{font-size:24px;line-height:1.3;color:var(--ink);overflow-wrap:anywhere;display:block;margin-top:12px}
+.zeit-reference .record{border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:12px;background:var(--page)}
+.zeit-reference .record-info b{font-size:16px}.zeit-reference .record-info small{font-size:14px}
+.zeit-reference .record details{font-size:14px;line-height:1.6}.zeit-reference .record summary{min-height:44px;padding-top:10px;color:var(--primary-tone);cursor:pointer}
+.zeit-reference .record .icon-button{min-width:44px;min-height:44px;border-radius:12px;color:var(--soft)}
+.zeit-reference .record .icon-button:hover{background:var(--accent-tone);color:var(--primary-tone)}
+/* Settings are now separate cards rather than one long undifferentiated panel. */
+.zeit-reference .panel.settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;max-width:none;padding:0;border:0;background:transparent;box-shadow:none}
+.zeit-reference .settings>:is(section,.account-card){min-width:0;border:1px solid var(--line);border-radius:22px;background:var(--surface);box-shadow:var(--zk-shadow);padding:24px;margin:0}
+.zeit-reference .settings .account-card{grid-column:1/-1;border-top:4px solid var(--zk-blue)}
+.zeit-reference .settings .account-email{font-size:20px;font-weight:600;margin:14px 0}
+.zeit-reference .settings form{max-width:none}.zeit-reference .settings h3{margin-bottom:14px}
+.zeit-reference .settings .settings-work{grid-column:1/-1}
+.zeit-reference .settings-work form{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.zeit-reference .settings-work form>p,.zeit-reference .settings-work form>button{grid-column:1/-1}
+.zeit-reference .settings-work form>button{justify-self:start}
+.zeit-reference .settings .balance-overview{grid-template-columns:1fr}
+.zeit-reference .settings .reset-section{border:1px solid #e8bec5;grid-column:1/-1}
+.zeit-reference .settings .reset-section h3{color:#ba344d}
+.zeit-reference .shift-layout .panel{border-top:4px solid var(--zk-blue)}
+.zeit-reference .shift-layout .panel:nth-child(2){border-top-color:var(--zk-violet)}
+/* Portalled dialogs and selects share the same form treatment. */
+[data-slot=dialog-content],[data-slot=alert-dialog-content]{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 20px 80px #132e4930;max-height:calc(100dvh - 32px);overflow-y:auto}
+[data-slot=dialog-title],[data-slot=alert-dialog-title]{font-size:24px;line-height:1.3}
+[data-slot=dialog-description],[data-slot=alert-dialog-description]{font-size:14px;line-height:1.6;color:var(--soft)}
+[data-slot=select-content]{background:var(--surface);color:var(--ink);border-color:var(--line);border-radius:14px}
+[data-slot=select-item]{min-height:44px;font-size:14px;white-space:normal}
+/* Authentication shares the clock branding and blue hero surface. */
+.zeit-auth .top{border:0}.zeit-auth .brand{color:var(--primary-tone);font-size:32px}.zeit-auth .brand-dot{display:none}
+.zeit-auth .logo{background:transparent;color:var(--primary-tone);width:42px;height:42px}.zeit-auth .logo svg{width:42px;height:42px}
+.zeit-auth .auth-wrap{gap:28px;align-items:stretch;margin:42px auto}
+.zeit-auth .auth-intro{background:linear-gradient(130deg,#105f9f,#075399);border-radius:28px;padding:40px;display:flex;flex-direction:column;justify-content:center;color:white}
+.zeit-auth .auth-intro .eyebrow{color:#c6e3ff;font-size:14px;line-height:1.6}
+.zeit-auth .auth-intro .muted{color:#e2f0ff;font-size:18px}.zeit-auth .auth-intro h1{font-size:clamp(34px,4vw,52px);margin:24px 0}
+.zeit-auth .auth-card{background:var(--surface);border:1px solid var(--line);border-radius:28px;box-shadow:var(--zk-shadow);padding:32px}
+.zeit-auth .auth-card>svg{background:var(--accent-tone);color:var(--primary-tone);padding:14px;width:58px;height:58px;border-radius:50%}
+.zeit-auth .auth-links{margin-top:4px}.zeit-auth footer{font-size:14px;color:var(--soft)}
+html.dark .zeit-reference :is(.monthly-grid>div,.balance-overview>section:nth-child(2)){background:#173652}
+html.dark .zeit-reference :is(.monthly-grid>div:nth-child(3n+2),.balance-overview>section:first-child,.icon.purple){background:#173e36}
+html.dark .zeit-reference .monthly-grid>div:nth-child(3n){background:#403521}
+html.dark .zeit-reference .positive{color:#7ce2c5}html.dark .zeit-reference .negative{color:#ffaaa1}
+html.dark .zeit-reference .leave-calendar .cal-vacation{background:#173e36}html.dark .zeit-reference .leave-calendar .cal-rest{background:#30284d}html.dark .zeit-reference .leave-calendar .cal-sick-note{background:#492838}
+html.dark .zeit-reference .settings .reset-section h3{color:#ffaaa1}
+@media(max-width:900px){.zeit-reference .monthly-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.zeit-reference .workspace{grid-template-columns:1fr}.zeit-reference .calendar-layout{grid-template-columns:1fr}}
+@media(max-width:767px){.zeit-reference .zeit-main{padding-inline:16px}.zeit-reference .top .brand{font-size:26px}.zeit-reference .top .logo,.zeit-reference .top .logo svg{width:32px;height:32px}.zeit-reference .panel{padding:20px;border-radius:21px}.zeit-reference .heading{align-items:stretch;gap:14px;padding:24px 0 20px}.zeit-reference .heading>.primary{align-self:flex-start}.zeit-reference .panel.settings{grid-template-columns:1fr;padding:0}.zeit-reference .settings>:is(section,.account-card){padding:22px}.zeit-reference .settings-work form{grid-template-columns:1fr}.zeit-reference .calendar-detail{padding:18px}.zeit-reference .calendar-filters{padding:14px}.zeit-reference .balance-overview>section{padding:18px}.zeit-reference .monthly-grid strong{font-size:22px}.zeit-reference .calendar-export{padding:14px}.zeit-reference .calendar-export>button{width:100%}.zeit-auth .auth-wrap{margin:24px auto;gap:20px;min-height:0}.zeit-auth .auth-intro{padding:26px}.zeit-auth .auth-intro h1{font-size:34px;margin:12px 0}.zeit-auth .auth-intro .eyebrow{display:none}.zeit-auth .auth-card{padding:24px}.zeit-auth .brand{font-size:25px}[data-slot=dialog-content],[data-slot=alert-dialog-content]{padding:22px;border-radius:22px;width:calc(100% - 24px)}.zeit-reference .dashboard-bottom{padding-inline:6px}}
+@media(max-width:370px){.zeit-reference .monthly-grid{grid-template-columns:1fr}.zeit-reference .top .brand{font-size:22px}.zeit-reference .top .logo{display:none}.zeit-reference .record-info{flex-basis:65%}}
+@media(prefers-reduced-motion:reduce){button{transition:none}}
+@media print{.zeit-reference .top,.zeit-reference .sync-status,.zeit-reference .heading>.primary{display:none}.zeit-reference .panel,.zeit-reference .record{box-shadow:none;break-inside:avoid}}
+
+/* Keyboard entry avoids the Android clock dialog and its clipped confirmation. */
+.entry-dialog .clock-keyboard-input{width:100%;min-width:0;text-align:center;font-variant-numeric:tabular-nums;font-size:1.25rem;letter-spacing:.04em}
+.entry-dialog .clock-keyboard-hint{display:block;color:var(--soft);font-size:.875rem;line-height:1.4;font-weight:400;letter-spacing:normal}
+.entry-dialog form>.primary.wide{display:flex;align-items:center;justify-content:center;text-align:center;width:100%;min-width:0;margin-inline:auto;white-space:normal;min-height:52px}
+.entry-dialog .field-row>label{min-width:0}

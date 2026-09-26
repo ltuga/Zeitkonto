@@ -1,0 +1,38 @@
+plugins { id 'com.android.application' }
+
+def testStore = providers.environmentVariable('ZEITKONTO_TEST_KEYSTORE').orNull
+android {
+    namespace 'com.ltuga.zeitkonto'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'com.ltuga.zeitkonto'
+        minSdk 30
+        targetSdk 35
+        versionCode 4
+        versionName '0.2.0'
+    }
+    signingConfigs {
+        testUpdate {
+            if (testStore != null) {
+                storeFile file(testStore)
+                storePassword providers.environmentVariable('ZEITKONTO_TEST_STORE_PASSWORD').orNull
+                keyAlias providers.environmentVariable('ZEITKONTO_TEST_KEY_ALIAS').orNull
+                keyPassword providers.environmentVariable('ZEITKONTO_TEST_KEY_PASSWORD').orNull
+            }
+        }
+    }
+    buildTypes {
+        debug { applicationIdSuffix '.test'; versionNameSuffix '-test'; debuggable false; signingConfig testStore != null ? signingConfigs.testUpdate : null }
+        release { minifyEnabled false }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    lint { abortOnError true }
+}
+
+dependencies {
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
+    implementation 'androidx.webkit:webkit:1.12.1'
+}

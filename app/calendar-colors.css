@@ -1,0 +1,20 @@
+/* Shared calendar palette: legend and recorded days always use the same colour. */
+:root{--day-work:#0876cf;--day-vacation:#008968;--day-rest:#7c45d8;--day-sick:#cb006b;--day-sick-unverified:#b86a14;--day-public:#cc8b1b;--day-work-bg:#e7f3ff;--day-vacation-bg:#def5ec;--day-rest-bg:#efe6ff;--day-sick-bg:#ffe5f0;--day-sick-unverified-bg:#fff0da}
+html.dark{--day-work:#63b8ff;--day-vacation:#45d3aa;--day-rest:#ba98ff;--day-sick:#ff83bd;--day-sick-unverified:#ffc16b;--day-public:#f2be59;--day-work-bg:#173850;--day-vacation-bg:#153e32;--day-rest-bg:#35274c;--day-sick-bg:#4a2539;--day-sick-unverified-bg:#46341f}
+.zeit-reference .legend-work:before{background:var(--day-work)!important}
+.zeit-reference .legend-vacation:before{background:var(--day-vacation)!important}
+.zeit-reference .legend-rest:before{background:var(--day-rest)!important}
+.zeit-reference .legend-sick-note:before{background:var(--day-sick)!important}
+.zeit-reference .legend-sick-no-note:before{background:var(--day-sick-unverified-bg)!important;border:2px dashed var(--day-sick-unverified)}
+.zeit-reference .legend-public:before{background:var(--day-public)!important}
+.zeit-reference .calendar-legend span:before{width:12px;height:12px;flex:none}
+.zeit-reference .leave-calendar .cal-work{--day-mark:var(--day-work);background:var(--day-work-bg)!important;box-shadow:inset 0 -4px var(--day-mark)}
+.zeit-reference .leave-calendar .cal-vacation{--day-mark:var(--day-vacation);background:var(--day-vacation-bg)!important;box-shadow:inset 0 -4px var(--day-mark)}
+.zeit-reference .leave-calendar .cal-rest{--day-mark:var(--day-rest);background:var(--day-rest-bg)!important;box-shadow:inset 0 -4px var(--day-mark)}
+.zeit-reference .leave-calendar .cal-sick-note{--day-mark:var(--day-sick);background:var(--day-sick-bg)!important;box-shadow:inset 0 -4px var(--day-mark)}
+.zeit-reference .leave-calendar .cal-sick-no-note{--day-mark:var(--day-sick-unverified);background:var(--day-sick-unverified-bg)!important;border-bottom:3px dashed var(--day-mark);box-shadow:none}
+.zeit-reference .leave-calendar .cal-public{outline:2px solid var(--day-public);outline-offset:-3px}
+.ts-dot.work{background:var(--day-work)}.ts-dot.holiday{background:var(--day-vacation)}.ts-dot.rest{background:var(--day-rest)}.ts-dot.sick{background:var(--day-sick)}
+
+.ts-dot.sick-unverified{background:var(--day-sick-unverified-bg);border:2px dashed var(--day-sick-unverified);color:var(--day-sick-unverified)}
+html.dark .ts-dot:not(.ts-empty){color:#142b40}html.dark .ts-dot.sick-unverified{color:var(--day-sick-unverified)}

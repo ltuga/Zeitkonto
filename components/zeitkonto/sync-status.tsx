@@ -1,0 +1,8 @@
+'use client';
+import {hasPending} from '@/lib/local-sync';
+import {useEffect,useState} from 'react';
+import {CloudCheck,CloudOff,RefreshCw,TriangleAlert} from 'lucide-react';
+import {readOutbox} from '@/lib/offline-work';
+import {translate,locales,type Language} from '@/lib/i18n';
+import '@/lib/improvements-i18n';
+export function SyncStatus({owner,offline,status,last,lang,onSync,disabled}:{owner:string;offline:boolean;status:'loading'|'saving'|'saved'|'error';last:number|null;lang:Language;onSync:()=>void;disabled:boolean}){const t=(s:string)=>translate(lang,s),[pending,setPending]=useState(false);useEffect(()=>{const check=async()=>{try{const q=readOutbox();setPending((q?.owner===owner&&q.dirty)||await hasPending(owner))}catch{setPending(true)}};check();const timer=setInterval(check,2000);window.addEventListener('storage',check);return()=>{clearInterval(timer);window.removeEventListener('storage',check)}},[owner,status]);const Icon=offline?CloudOff:status==='error'||pending?TriangleAlert:status==='saved'?CloudCheck:RefreshCw;const label=offline?'Sem internet':status==='saving'?'A guardar…':status==='loading'?'A sincronizar…':status==='error'?'Sincronização por confirmar':pending?'Registos por sincronizar':'Guardado online';return <div className="sync-status" role="status"><Icon size={18}/><div><span>{t(label)}</span>{last&&<small>{t('Última sincronização')}: {new Date(last).toLocaleTimeString(locales[lang],{hour:'2-digit',minute:'2-digit'})}</small>}</div><button className="text-button" disabled={disabled||offline||status==='loading'||status==='saving'} onClick={onSync}>{t('Sincronizar')}</button>{pending&&<span>{t('Registos por sincronizar')}</span>}</div>}

@@ -1,0 +1,17 @@
+:root{--surface:#fff;--page:#f8fbff;--ink:#101f38;--soft:#5c6b7d;--line:#e6edf5;--tint:#edf6ff;--primary-tone:#0069ce;--accent-tone:#e8f3ff}
+html.dark{--on-primary:#0b1523;--surface:#152438;--page:#0b1523;--ink:#e4edf8;--soft:#acbfd5;--line:#344c67;--tint:#1b314c;--primary-tone:#80b5ff;--accent-tone:#223c60;--background:#152438;--foreground:#e4edf8;background:var(--page);color:var(--ink);color-scheme:dark}
+html.dark body{background:var(--page);color:var(--ink)}html.dark .card{background:var(--surface);color:var(--ink)}
+html.dark :is(.panel,.stat,.action-card){background:var(--surface);border-color:var(--line)}
+html.dark :is(input,textarea,.select-input[data-slot],.language-trigger[data-slot],.shift-form input){background:#102035;color:var(--ink);border-color:var(--line)}
+html.dark :is(.muted,.private,.stat p,.stat small,.timer-note,.record-info small,.action-card small,footer,.empty){color:var(--soft)}
+html.dark :is(.top,.record,.account-card,.install-card,.calendar-detail,.balance-free){border-color:var(--line)}
+html.dark .zeit-main>.top{background:#101e30;border-color:var(--line)}
+html.dark :is(.rule,.period-preview,.export-summary,.balance-overview){background:var(--tint);color:var(--ink);border-color:var(--line)}
+html.dark :is(.rule b,.selected-entry,.timer,.balance-free,.eyebrow,.icon-button,.text-button){color:#9ac5ff}
+html.dark :is(.secondary,.menu-trigger,.pill){background:#223c60;color:#dcecff;border-color:#42658e}
+html.dark .secondary:hover{background:#2d4e79}html.dark .primary{background:#2466cb;color:#fff}
+html.dark .notice,html.dark .positive{color:#7ce2c5}html.dark .negative{color:#ffaaa1}
+html.dark .error{background:#482330;color:#ffc0b7}html.dark .reminder-banner{background:#143b3e;color:#c8f5ec;border-color:#327479}
+html.dark .leave-calendar .cal-vacation{background:#3a2c53}html.dark .leave-calendar .cal-rest{background:#1b3a53}html.dark .leave-calendar .cal-sick-note{background:#492838}html.dark .leave-calendar .cal-sick-no-note{background:#453720}html.dark .holiday-name,html.dark .holiday-list-item b{color:#f3c67b}
+html.dark .purple{background:#382851;color:#d7b5ff}html.dark .blue{background:#153b48;color:#82dded}
+html.dark .included-dates span{border-color:var(--line)}

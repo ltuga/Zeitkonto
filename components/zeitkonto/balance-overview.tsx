@@ -1,0 +1,8 @@
+import {annualSummary} from '@/lib/time';
+import type {State} from '@/lib/time';
+import {displayDays} from '@/lib/holiday-label';
+import {translate,formatMinutes,type Language} from '@/lib/i18n';
+export function BalanceOverview({data,year,lang}:{data:State;year:number;lang:Language}){
+ const s=annualSummary(data,year),t=(v:string)=>translate(lang,v),f=(v:number)=>formatMinutes(lang,v),v=(n:number|null)=>n===null?t('Por definir'):displayDays(n,lang);
+ return <div className="balance-overview"><section><h3>{t('Férias')} · {year}</h3><dl><div><dt>{t('Total de dias de férias')}</dt><dd>{v(s.total)}</dd></div><div><dt>{t('Usadas até hoje')}</dt><dd>{v(s.used)}</dd></div><div><dt>{t('Saldo por usar')}</dt><dd>{v(s.unspent)}</dd></div><div><dt>{t('Marcadas para o futuro')}</dt><dd>{v(s.reserved)}</dd></div><div className="balance-free"><dt>{t('Livres para marcar')}</dt><dd>{v(s.remaining)}</dd></div></dl></section><section><h3>{t('Banco de horas')}</h3><dl><div><dt>{t('Usadas em descanso até hoje')}</dt><dd>{f(s.usedHours)}</dd></div><div><dt>{t('Saldo de horas atual')}</dt><dd>{f(s.hours)}</dd></div><div><dt>{t('Horas reservadas')}</dt><dd>{f(s.reservedHours)}</dd></div><div className="balance-free"><dt>{t('Horas livres para marcar')}</dt><dd>{f(s.availableHours)}</dd></div></dl><p>{s.restDays} {t('dias de descanso disponíveis')}</p></section><p className="muted balance-date-rule">{t('Os dias contam como usados a partir da data marcada, no fuso horário do dispositivo. As reservas passam a usadas sem novo desconto.')} {t('Horas de trabalho futuras só entram no saldo quando a data chegar.')}</p></div>
+}

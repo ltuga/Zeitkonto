@@ -5,7 +5,8 @@ import {useEffect,useRef,useState} from 'react';
 import type {User} from '@supabase/supabase-js';
 import {Clock3,LockKeyhole} from 'lucide-react';
 import {initializeAuth,authClient,authenticatedFetch} from '@/lib/auth-client';
-import {Language,translate} from '@/lib/i18n';
+import {translate} from '@/lib/i18n';
+import {readOfflineIdentity} from '@/lib/offline-identity';
 import '@/lib/auth-i18n';
 import {readLocal,anyPending,deleteLocal} from '@/lib/local-sync';
 import Home from './time-app';
@@ -24,8 +25,8 @@ export default function AuthShell({url,publishableKey}:{url:string;publishableKe
   recovery.current=new URLSearchParams(location.search).get('auth')==='recovery'||new URLSearchParams(location.hash.slice(1)).get('type')==='recovery';
   if(recovery.current)setMode('reset');
   const c=initializeAuth(url,publishableKey);let live=true;
-  const {data:{subscription}}=c.auth.onAuthStateChange((event,session)=>{if(!live)return;if(event==='PASSWORD_RECOVERY'){recovery.current=true;setMode('reset')}if(event==='SIGNED_OUT'&&navigator.onLine){if(hasGeoNative())void geoCommand('device','suspend').catch(()=>{});setUser(null);setReady(false);setMode('login');recovery.current=false}if(session?.user.email_confirmed_at)setUser(session.user)});
-  if(!navigator.onLine){const cached=localStorage.getItem('zeitkonto-offline-user');if(cached){try{const previous=JSON.parse(cached);void readLocal(previous.id).then(local=>{if(live&&local){setUser(previous as User);setLoading(false)}else if(live)setLoading(false)});}catch{setLoading(false)}}else setLoading(false);return()=>{live=false;subscription.unsubscribe()};}
+  const {data:{subscription}}=c.auth.onAuthStateChange((event,session)=>{if(!live)return;if(event==='PASSWORD_RECOVERY'){recovery.current=true;setMode('reset')}if(event==='SIGNED_OUT'){localStorage.removeItem('zeitkonto-offline-user');if(hasGeoNative())void geoCommand('device','suspend').catch(()=>{});setUser(null);setReady(false);setMode('login');recovery.current=false}if(session?.user.email_confirmed_at)setUser(session.user)});
+  if(!navigator.onLine){const previous=readOfflineIdentity(localStorage);void Promise.resolve().then(async()=>{const local=previous?await readLocal(previous.id):null;if(live){if(previous&&local)setUser(previous as User);setLoading(false)}}).catch(()=>{if(live)setLoading(false)});return()=>{live=false;subscription.unsubscribe()};}
   c.auth.getUser().then(async({data,error})=>{if(!live)return;if(error&&(!navigator.onLine||error.name==='AuthRetryableFetchError')){const session=(await c.auth.getSession()).data.session;if(session?.user.email_confirmed_at&&await readLocal(session.user.id)){setUser(session.user);setLoading(false);return;}}if(error&&error.name!=='AuthRetryableFetchError'&&hasGeoNative())void geoCommand('device','suspend').catch(()=>{});setUser(!error&&data.user?.email_confirmed_at?data.user:null);if(!error&&data.user?.email_confirmed_at)localStorage.setItem('zeitkonto-offline-user',JSON.stringify({id:data.user.id,email:data.user.email,email_confirmed_at:data.user.email_confirmed_at}));if(error&&recovery.current){setError('O link expirou ou é inválido. Pede um novo email.');setMode('forgot');recovery.current=false}setLoading(false)}).catch(async()=>{const session=(await c.auth.getSession()).data.session;if(live&&session?.user.email_confirmed_at&&await readLocal(session.user.id)){setUser(session.user);setLoading(false);return;}if(live){setError('Não foi possível ligar. Tenta novamente.');setLoading(false)}});
   return()=>{live=false;subscription.unsubscribe()};
  },[url,publishableKey]);

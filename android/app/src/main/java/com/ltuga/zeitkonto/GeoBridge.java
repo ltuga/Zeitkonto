@@ -30,7 +30,7 @@ final class GeoBridge {
                     if(requestId.length()>80)throw new Exception();
                     String command=req.getString("command");
                     if(command.equals("permissions")) { permissions(activity);respond(reply,requestId,new JSONObject());return; }
-                    if(command.equals("locate")) {locate(activity,reply,requestId);return;}
+                    if(command.equals("locate")) {locate(activity,web,gate,reply,requestId);return;}
                     JSONObject result=command(activity,req);
                     respond(reply,requestId,result);
                 } catch(Exception e) {
@@ -144,11 +144,13 @@ final class GeoBridge {
             .setPositiveButton(android.R.string.ok,(d,w)->a.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,Uri.parse("package:"+a.getPackageName())))).show();
     }
     @SuppressLint("MissingPermission")
-    static void locate(Activity a,JavaScriptReplyProxy reply,String id) throws Exception {
+    static void locate(Activity a,WebView web,Gate gate,JavaScriptReplyProxy reply,String id) throws Exception {
         if(a.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED){permissions(a);throw new Exception();}
         LocationServices.getFusedLocationProviderClient(a).getCurrentLocation(new CurrentLocationRequest.Builder()
             .setPriority(Priority.PRIORITY_HIGH_ACCURACY).setDurationMillis(8000).setMaxUpdateAgeMillis(0).build(),new CancellationTokenSource().getToken())
             .addOnCompleteListener(task->{try{
+                // Location may arrive after backgrounding, locking or navigation.
+                if(a.isFinishing() || a.isDestroyed() || !gate.unlocked() || !NavigationPolicy.trusted(web.getUrl()))return;
                 if(!task.isSuccessful()||task.getResult()==null||task.getResult().getAccuracy()>75) {
                     if(WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER))reply.postMessage(new JSONObject().put("requestId",id).put("error","Localização indisponível ou imprecisa.").toString());return;}
                 respond(reply,id,new JSONObject().put("latitude",task.getResult().getLatitude()).put("longitude",task.getResult().getLongitude()));

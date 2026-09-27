@@ -1,5 +1,7 @@
 # Zeitkonto — estado atual
 
+Segurança/dependências da 0.2.1: [revisão, correções e pendências](docs/security-0.2.1.md), [inventário de todos os avisos](docs/security-0.2.1-dependencies.md). Auditoria: 61 → 4 avisos, zero críticos; não equivale a aprovação para publicação.
+
 Código da aplicação pessoal existente: entrada, saída, pausas, férias, doença, banco de horas, lembretes e localização. A interface principal usa resumos semanais. A noite de domingo pertence à semana seguinte, preservando a data original do registo.
 
 A versão de código atual é **0.2.1**, com o novo ícone e a correção final de foco/scroll do calendário. O Android usa compileSdk/targetSdk 36, AGP 8.10.1, Gradle 8.11.1 e Java 17. A consolidação, os ficheiros recuperados e as verificações estão em [preparação 0.2.1](docs/release-0.2.1.md).

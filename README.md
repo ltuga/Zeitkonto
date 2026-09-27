@@ -2,7 +2,9 @@
 
 Código da aplicação pessoal existente: entrada, saída, pausas, férias, doença, banco de horas, lembretes e localização. A interface principal usa resumos semanais. A noite de domingo pertence à semana seguinte, preservando a data original do registo.
 
-A simplificação foi publicada em setembro de 2026. A compilação web e os 75 testes automatizados passaram. O APK de teste 0.2.0 foi assinado com a chave de testes original; o utilizador confirmou os avisos por localização no seu telemóvel. Os lembretes por horário via navegador ainda não estão integrados na versão Android.
+A versão de código atual é **0.2.1**, com o novo ícone e a correção final de foco/scroll do calendário. O Android usa compileSdk/targetSdk 36, AGP 8.10.1, Gradle 8.11.1 e Java 17. A consolidação, os ficheiros recuperados e as verificações estão em [preparação 0.2.1](docs/release-0.2.1.md).
+
+O APK de teste 0.2.1 anteriormente entregue usa targetSdk 35; esta preparação do código não atualiza esse APK instalado. A localização foi confirmada pelo utilizador na versão anterior; a API 36 ainda precisa de testes num dispositivo real. Os lembretes por horário via navegador ainda não estão integrados na versão Android. Não foi criado AAB nem publicada uma versão Google Play.
 
 ## Credenciais e ficheiros locais
 
@@ -22,7 +24,7 @@ Os ficheiros de compilação, APKs, dependências instaladas e chaves de assinat
 
 Aplicação existente de registo de trabalho, pausas, férias e banco de horas, em React/TypeScript, Vinext/Vite, Supabase Auth/Postgres e Cloudflare Workers/D1.
 
-A revisão visual e as regras de 40 horas semanais, incluindo o turno noturno de domingo, foram publicadas. O cliente Android existente está em `android/`. Consultar [backend](docs/supabase-backend.md) e [navegação Android e validação](docs/navegacao-android.md). A atualização nativa 0.1.2, incluindo o widget de atalhos Android, está preparada em código, mas ainda não foi gerado um novo APK.
+A revisão visual e as regras de 40 horas semanais, incluindo o turno noturno de domingo, foram publicadas. O cliente Android existente está em `android/`. Consultar [backend](docs/supabase-backend.md), [navegação Android](docs/navegacao-android.md) e o [estado atual da 0.2.1](docs/release-0.2.1.md). As referências a versões 0.1.x nos guias antigos são históricas.
 
 Verificações: `pnpm exec tsc --noEmit`, `node --test tests/*.test.mjs`, `pnpm build` e `pnpm lint`. O lint global tem pendências anteriores descritas no relatório. Estas alterações não exigem novas chaves nem novas migrations.
 

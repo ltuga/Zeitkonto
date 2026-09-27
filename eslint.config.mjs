@@ -11,6 +11,7 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "outputs/**", // Generated local previews, not application source.
     "next-env.d.ts",
   ]),
   {

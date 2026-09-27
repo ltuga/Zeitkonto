@@ -1,6 +1,26 @@
-# Zeitkonto Android — 0.2.0 (assinatura de testes pendente)
+# Zeitkonto Android — 0.2.1
 
-Estado atual: [localização, compilação e testes da versão 0.2.0](../docs/entrada-saida-automatica.md). As secções 0.1.x abaixo preservam o histórico das versões anteriores.
+## Preparação API 36 — 27 de setembro de 2026
+
+Código atual: `compileSdk 36`, `targetSdk 36`, `minSdk 30`, AGP 8.10.1, Gradle 8.11.1 e JDK 17. Mantém `versionCode 5` e `versionName 0.2.1`. Ver [relatório e reprodução](../docs/release-0.2.1.md).
+
+O APK assinado descrito abaixo continua a ser o artefacto anterior, com targetSdk 35. O build desta preparação serve para validação e não é uma atualização assinada para instalar por cima dele. Antes de distribuir outro APK, usar a mesma chave de testes e incrementar o versionCode. Nenhum AAB ou certificado de produção foi criado.
+
+## Atualização 0.2.1 — 26 de setembro de 2026
+
+Novo ícone fornecido pelo utilizador, mantendo a aplicação Android existente.
+APK `Zeitkonto-0.2.1-teste.apk` compilado e assinado com a chave original de testes.
+Verificações: assembleDebug e lintDebug concluídos (0 erros, 6 avisos); 52 testes Java passaram.
+Assinatura e pacote comparados com a versão 0.2.0, alinhamento do APK validado.
+Instalação física da 0.2.1 ainda por testar.
+SHA-256: `e27461c9399780f343d248c359065d3f267404fb7279f4cf06435370a1cbc817`.
+Pacote de testes: `com.ltuga.zeitkonto.test`, versionCode `5`.
+Instalar o APK assinado com a mesma chave de testes por cima da versão anterior, sem desinstalar.
+A correção do foco/scroll do calendário já está publicada no website carregado pela WebView.
+Os registos, sessão e configuração de localização são mantidos numa atualização normal.
+As secções seguintes documentam versões anteriores e podem conter limitações já ultrapassadas.
+
+Histórico da localização: [localização, compilação e testes da versão 0.2.0](../docs/entrada-saida-automatica.md). As secções 0.1.x abaixo preservam o histórico das versões anteriores.
 
 Primeiro cliente Android (Java, WebView do sistema) para a Zeitkonto existente.
 Não é uma publicação Google Play nem uma reimplementação nativa de todas as funcionalidades.

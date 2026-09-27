@@ -166,7 +166,7 @@ public class MainActivity extends Activity {
         settings.setJavaScriptCanOpenWindowsAutomatically(false);
         settings.setSupportMultipleWindows(false);
         settings.setMediaPlaybackRequiresUserGesture(true);
-        settings.setUserAgentString(settings.getUserAgentString() + " ZeitkontoAndroid/0.2.0");
+        settings.setUserAgentString(settings.getUserAgentString() + " ZeitkontoAndroid/0.2.1");
         CookieManager.getInstance().setAcceptThirdPartyCookies(web, false);
         web.setWebChromeClient(new WebChromeClient() {
             @Override public void onPermissionRequest(PermissionRequest request) { request.deny(); }
@@ -249,7 +249,7 @@ public class MainActivity extends Activity {
                     break;
                 case 2: confirmPrint(); break;
                 case 3: openBrowser(Uri.parse(NavigationPolicy.HOME)); break;
-                case 4: new AlertDialog.Builder(this).setTitle("Zeitkonto 0.2.0")
+                case 4: new AlertDialog.Builder(this).setTitle("Zeitkonto 0.2.1")
                     .setMessage(R.string.about_text).setPositiveButton(android.R.string.ok, null).show(); break;
                 default: return false;
             }

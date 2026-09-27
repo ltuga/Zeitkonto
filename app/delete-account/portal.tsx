@@ -1,4 +1,5 @@
 'use client';
+import {SupportContact} from '@/components/zeitkonto/support-contact';
 import Link from 'next/link';
 import {useState} from 'react';
 import {createClient} from '@supabase/supabase-js';
@@ -33,5 +34,5 @@ export default function DeleteAccount({url,publishableKey}:{url:string;publishab
    }catch{setError(t.local);}
   }catch{setError(t.error);}finally{setBusy(false);setPassword('');}
  }
- return <main className="auth-page"><section className="panel" style={{maxWidth:640,margin:'2rem auto',padding:24}}><h1>{t.title}</h1><p>{t.detail}</p><p className="muted">{t.retention}</p>{done?<p role="status">{t.done}</p>:<form onSubmit={submit}><label>Email<input type="email" autoComplete="username" required value={email} onChange={e=>setEmail(e.target.value)}/></label><label>{t.password}<input type="password" autoComplete="current-password" required maxLength={128} value={password} onChange={e=>setPassword(e.target.value)}/></label><label>{t.confirm}<input required pattern="DELETE" value={confirmation} onChange={e=>setConfirmation(e.target.value)}/></label><button className="primary" disabled={busy||confirmation!=='DELETE'}>{busy?t.busy:t.button}</button></form>}{error&&<p className="error" role="alert">{error}</p>}<Link href="/">{t.back}</Link></section></main>;
+ return <main className="auth-page"><section className="panel" style={{maxWidth:640,margin:'2rem auto',padding:24}}><h1>{t.title}</h1><p>{t.detail}</p><p className="muted">{t.retention}</p>{done?<p role="status">{t.done}</p>:<form onSubmit={submit}><label>Email<input type="email" autoComplete="username" required value={email} onChange={e=>setEmail(e.target.value)}/></label><label>{t.password}<input type="password" autoComplete="current-password" required maxLength={128} value={password} onChange={e=>setPassword(e.target.value)}/></label><label>{t.confirm}<input required pattern="DELETE" value={confirmation} onChange={e=>setConfirmation(e.target.value)}/></label><button className="primary" disabled={busy||confirmation!=='DELETE'}>{busy?t.busy:t.button}</button></form>}{error&&<p className="error" role="alert">{error}</p>}<SupportContact lang={lang}/><Link href="/">{t.back}</Link></section></main>;
 }

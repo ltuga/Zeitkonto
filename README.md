@@ -181,3 +181,7 @@ Java Android, build web e testes passaram. O APK está preparado sem assinatura;
 Consultar [auditoria](docs/security-0.2.1.md), [conta e logout](docs/release-completion-0.2.1.md) e [rascunho de privacidade](docs/privacy-release-draft.md). `/delete-account` usa o Supabase público e D1 `DB` já configurados e as migrations de eliminação existentes. Nunca colocar service_role no cliente.
 
 Logout preserva alterações pendentes, ocultando-as até novo login da mesma conta. Eliminar a conta apaga os seus dados após confirmação e reautenticação. Novas operações nativas exigem APK atualizado e assinado com a chave de testes original; build sem assinatura não é instalável.
+
+## Contacto público
+
+Desenvolvedor: **Ltuga**. Suporte e privacidade: **Ltugamatos@gmail.com**. Página pública `/support`; eliminação em `/delete-account`. Estes dados foram confirmados pelo responsável. A página de apoio não substitui a política de privacidade final, cujas pendências estão no rascunho técnico.

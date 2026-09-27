@@ -1,4 +1,5 @@
 'use client';
+import {SupportContact} from '@/components/zeitkonto/support-contact';
 import Link from 'next/link';
 import '@/lib/account-i18n';
 import {geoCommand,hasGeoNative} from '@/lib/geofence-client';
@@ -68,5 +69,5 @@ export default function AuthShell({url,publishableKey}:{url:string;publishableKe
  {error&&<p className="error" role="alert">{t(error)}</p>}{notice&&<p className="rule" role="status">{t(notice)}</p>}
  <button className="primary wide" disabled={busy||mode==='reset'&&!user}>{busy?t('A guardar…'):t(mode==='login'?'Entrar':mode==='forgot'?'Enviar link':mode==='signup'?'Criar conta':'Guardar palavra-passe')}</button>
  <div className="auth-links">{mode==='login'?<><button type="button" className="text-button" disabled={busy} onClick={()=>changeMode('forgot')}>{t('Esqueci-me da palavra-passe')}</button><button type="button" className="secondary" disabled={busy} onClick={()=>changeMode('signup')}>{t('Criar conta')}</button></>:<button type="button" className="text-button" disabled={busy} onClick={()=>{if(recovery.current){void signOut()}else changeMode('login')}}>{t('Voltar')}</button>}</div>
- </form>}</div></section><footer><Link href="/delete-account">{t("Eliminar conta")}</Link> · Zeitkonto · {t('O teu banco de horas')}</footer></main>
+ </form>}</div></section><footer><Link href="/delete-account">{t("Eliminar conta")}</Link> · Zeitkonto · {t('O teu banco de horas')}<SupportContact lang={lang}/></footer></main>
 }

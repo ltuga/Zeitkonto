@@ -1,6 +1,6 @@
 # Privacidade e Data Safety — rascunho técnico 0.2.1
 
-Não publicar como política final. Falta o nome público do responsável e email público de suporte/privacidade, além dos prazos reais de retenção e contratos/regiões dos fornecedores.
+Não publicar como política final. Nome público do desenvolvedor confirmado: **Ltuga**. Contacto público de suporte e privacidade: **Ltugamatos@gmail.com**. Permanecem por confirmar os prazos reais de retenção e contratos/regiões dos fornecedores. O nome comercial não substitui a identificação legal eventualmente necessária.
 
 | Dados | Finalidade e armazenamento |
 |---|---|
@@ -29,7 +29,7 @@ Fontes oficiais: https://support.google.com/googleplay/android-developer/answer/
 
 ## Confirmações do responsável
 
-- Nome público e email público de suporte/privacidade.
+- Confirmados pelo utilizador: **Ltuga** e **Ltugamatos@gmail.com**. Disponíveis na app, em `/support` e na página de eliminação.
 - Regiões, contratos, prazos de backups/logs e marca técnica.
 - Consentimento/opt-out de analytics e base legal dos dados de doença.
 - Identidade/conta Play Console e requisitos de testes dessa conta.

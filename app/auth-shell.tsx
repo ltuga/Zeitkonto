@@ -1,4 +1,6 @@
 'use client';
+import Link from 'next/link';
+import '@/lib/account-i18n';
 import {geoCommand,hasGeoNative} from '@/lib/geofence-client';
 import {useAppLanguage} from '@/lib/use-app-language';
 import {useEffect,useRef,useState} from 'react';
@@ -8,7 +10,7 @@ import {initializeAuth,authClient,authenticatedFetch} from '@/lib/auth-client';
 import {translate} from '@/lib/i18n';
 import {readOfflineIdentity} from '@/lib/offline-identity';
 import '@/lib/auth-i18n';
-import {readLocal,anyPending,deleteLocal} from '@/lib/local-sync';
+import {readLocal,hasPending,deleteLocal} from '@/lib/local-sync';
 import Home from './time-app';
 import {clearDeviceSession,logoutFromDevice} from '@/lib/logout';
 import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/components/ui/select';
@@ -27,7 +29,7 @@ export default function AuthShell({url,publishableKey}:{url:string;publishableKe
   const c=initializeAuth(url,publishableKey);let live=true;
   const {data:{subscription}}=c.auth.onAuthStateChange((event,session)=>{if(!live)return;if(event==='PASSWORD_RECOVERY'){recovery.current=true;setMode('reset')}if(event==='SIGNED_OUT'){localStorage.removeItem('zeitkonto-offline-user');if(hasGeoNative())void geoCommand('device','suspend').catch(()=>{});setUser(null);setReady(false);setMode('login');recovery.current=false}if(session?.user.email_confirmed_at)setUser(session.user)});
   if(!navigator.onLine){const previous=readOfflineIdentity(localStorage);void Promise.resolve().then(async()=>{const local=previous?await readLocal(previous.id):null;if(live){if(previous&&local)setUser(previous as User);setLoading(false)}}).catch(()=>{if(live)setLoading(false)});return()=>{live=false;subscription.unsubscribe()};}
-  c.auth.getUser().then(async({data,error})=>{if(!live)return;if(error&&(!navigator.onLine||error.name==='AuthRetryableFetchError')){const session=(await c.auth.getSession()).data.session;if(session?.user.email_confirmed_at&&await readLocal(session.user.id)){setUser(session.user);setLoading(false);return;}}if(error&&error.name!=='AuthRetryableFetchError'&&hasGeoNative())void geoCommand('device','suspend').catch(()=>{});setUser(!error&&data.user?.email_confirmed_at?data.user:null);if(!error&&data.user?.email_confirmed_at)localStorage.setItem('zeitkonto-offline-user',JSON.stringify({id:data.user.id,email:data.user.email,email_confirmed_at:data.user.email_confirmed_at}));if(error&&recovery.current){setError('O link expirou ou é inválido. Pede um novo email.');setMode('forgot');recovery.current=false}setLoading(false)}).catch(async()=>{const session=(await c.auth.getSession()).data.session;if(live&&session?.user.email_confirmed_at&&await readLocal(session.user.id)){setUser(session.user);setLoading(false);return;}if(live){setError('Não foi possível ligar. Tenta novamente.');setLoading(false)}});
+  c.auth.getUser().then(async({data,error})=>{if(!live)return;if(error&&(!navigator.onLine||error.name==='AuthRetryableFetchError')){const session=(await c.auth.getSession()).data.session;if(session?.user.email_confirmed_at&&await readLocal(session.user.id)){setUser(session.user);setLoading(false);return;}}if(error&&error.name!=='AuthRetryableFetchError')clearDeviceSession(localStorage);if(error&&error.name!=='AuthRetryableFetchError'&&hasGeoNative())void geoCommand('device','suspend').catch(()=>{});setUser(!error&&data.user?.email_confirmed_at?data.user:null);if(!error&&data.user?.email_confirmed_at)localStorage.setItem('zeitkonto-offline-user',JSON.stringify({id:data.user.id,email:data.user.email,email_confirmed_at:data.user.email_confirmed_at}));if(error&&recovery.current){setError('O link expirou ou é inválido. Pede um novo email.');setMode('forgot');recovery.current=false}setLoading(false)}).catch(async()=>{const session=(await c.auth.getSession()).data.session;if(live&&session?.user.email_confirmed_at&&await readLocal(session.user.id)){setUser(session.user);setLoading(false);return;}if(live){setError('Não foi possível ligar. Tenta novamente.');setLoading(false)}});
   return()=>{live=false;subscription.unsubscribe()};
  },[url,publishableKey]);
  useEffect(()=>{document.documentElement.lang=lang},[lang]);
@@ -36,7 +38,18 @@ export default function AuthShell({url,publishableKey}:{url:string;publishableKe
  useEffect(()=>{if(!user){setReady(false);return}let live=true;setReady(false);if(!navigator.onLine){readLocal(user.id).then(local=>{if(live&&local)setReady(true)});return()=>{live=false}}authenticatedFetch('/api/import-legacy',{method:'POST'}).then(r=>{if(!r.ok)throw Error();if(live)setReady(true)}).catch(async()=>{if(await readLocal(user.id)){if(live)setReady(true)}else if(live)setError('Não foi possível carregar a conta. Tenta novamente.')});return()=>{live=false}},[user?.id,retry]);
  function changeMode(next:Mode){setMode(next);setPassword('');setConfirm('');setError('');setNotice('')}
  function authError(code?:string){if(code==='invalid_credentials')return 'Email ou palavra-passe incorretos.';if(code==='email_not_confirmed')return 'Confirma o teu email antes de entrar.';if(code?.includes('rate_limit')||code==='over_request_rate_limit')return 'Demasiadas tentativas. Aguarda alguns minutos.';if(code==='weak_password')return 'Escolhe uma palavra-passe mais forte.';if(code==='same_password')return 'Escolhe uma palavra-passe diferente da anterior.';return 'Não foi possível concluir. Tenta novamente ou verifica a configuração de email.'}
- async function signOut(){if(busy)return;if(user&&hasGeoNative()){try{await geoCommand(user.id,'logout')}catch{setError('Abre as Definições e resolve as deteções pendentes antes de terminar sessão.');return;}}if(readOutbox()?.dirty||await anyPending()){setError('Sincroniza os registos pendentes antes de terminar sessão.');return;}localStorage.removeItem(KEY);if(user)await deleteLocal(user.id);localStorage.removeItem('zeitkonto-offline-user');setBusy(true);setError('');try{await Promise.race([unsubscribePush().catch(()=>{}),new Promise(resolve=>setTimeout(resolve,2000))]);localStorage.removeItem(PUSH_OWNER);await logoutFromDevice(()=>authClient().auth.signOut({scope:'local'}),()=>clearDeviceSession(localStorage),()=>location.replace('/?signed_out=1'))}catch{setError('Não foi possível ligar. Tenta novamente.');setBusy(false)}}
+ async function signOut(){
+  if(busy)return;setBusy(true);setError('');
+  try{
+   if(user&&hasGeoNative()){try{await geoCommand(user.id,'logout')}catch{await geoCommand(user.id,'suspend')}}
+   const queue=readOutbox();
+   if(queue?.owner===user?.id&&!queue?.dirty)localStorage.removeItem(KEY);
+   if(user&&!await hasPending(user.id))await deleteLocal(user.id);
+   await Promise.race([unsubscribePush().catch(()=>{}),new Promise(resolve=>setTimeout(resolve,2000))]);
+   localStorage.removeItem(PUSH_OWNER);
+   await logoutFromDevice(()=>authClient().auth.signOut({scope:'local'}),()=>clearDeviceSession(localStorage),()=>location.replace('/?signed_out=1'));
+  }catch{setError('Não foi possível terminar sessão em segurança. Tenta novamente.');setBusy(false)}
+ }
  async function submit(event:React.FormEvent){event.preventDefault();setError('');setNotice('');if((mode==='signup'||mode==='reset')&&password!==confirm){setError('As palavras-passe não coincidem.');return}setBusy(true);try{
   const c=authClient();
   if(mode==='login'){const {data,error}=await c.auth.signInWithPassword({email:email.trim(),password});if(error)throw error;if(data.user.email_confirmed_at){setUser(data.user);setPassword('')}}
@@ -55,5 +68,5 @@ export default function AuthShell({url,publishableKey}:{url:string;publishableKe
  {error&&<p className="error" role="alert">{t(error)}</p>}{notice&&<p className="rule" role="status">{t(notice)}</p>}
  <button className="primary wide" disabled={busy||mode==='reset'&&!user}>{busy?t('A guardar…'):t(mode==='login'?'Entrar':mode==='forgot'?'Enviar link':mode==='signup'?'Criar conta':'Guardar palavra-passe')}</button>
  <div className="auth-links">{mode==='login'?<><button type="button" className="text-button" disabled={busy} onClick={()=>changeMode('forgot')}>{t('Esqueci-me da palavra-passe')}</button><button type="button" className="secondary" disabled={busy} onClick={()=>changeMode('signup')}>{t('Criar conta')}</button></>:<button type="button" className="text-button" disabled={busy} onClick={()=>{if(recovery.current){void signOut()}else changeMode('login')}}>{t('Voltar')}</button>}</div>
- </form>}</div></section><footer>Zeitkonto · {t('O teu banco de horas')}</footer></main>
+ </form>}</div></section><footer><Link href="/delete-account">{t("Eliminar conta")}</Link> · Zeitkonto · {t('O teu banco de horas')}</footer></main>
 }

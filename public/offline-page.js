@@ -1,4 +1,4 @@
-import {readOutbox,writeOutbox,applyAction,locked} from './offline-core.js';
+import {readOwnedOutbox as readOutbox,writeOutbox,applyAction,locked} from './offline-core.js';
 import {offlineMessages} from './offline-translations.js';
 const saved=localStorage.getItem('meu-tempo-language');const lang=['pt','de','en','tr'].includes(saved)?saved:(navigator.languages||[navigator.language]).map(l=>l.split('-')[0]).find(l=>['pt','de','en','tr'].includes(l))||'en';
 const t=key=>offlineMessages[key]?.[lang]||key;document.documentElement.lang=lang;

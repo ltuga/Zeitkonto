@@ -175,3 +175,9 @@ Implementação opcional Desativado/Semiautomático/Automático, sem turnos obri
 Java Android, build web e testes passaram. O APK está preparado sem assinatura; aguarda autorização para reutilizar a chave de testes anterior e ainda exige testes num telefone real. Atualizar o website não instala geofencing nem o widget.
 
 [Documentação, permissões, ficheiros e testes](docs/entrada-saida-automatica.md).
+
+## Segurança e publicação 0.2.1
+
+Consultar [auditoria](docs/security-0.2.1.md), [conta e logout](docs/release-completion-0.2.1.md) e [rascunho de privacidade](docs/privacy-release-draft.md). `/delete-account` usa o Supabase público e D1 `DB` já configurados e as migrations de eliminação existentes. Nunca colocar service_role no cliente.
+
+Logout preserva alterações pendentes, ocultando-as até novo login da mesma conta. Eliminar a conta apaga os seus dados após confirmação e reautenticação. Novas operações nativas exigem APK atualizado e assinado com a chave de testes original; build sem assinatura não é instalável.

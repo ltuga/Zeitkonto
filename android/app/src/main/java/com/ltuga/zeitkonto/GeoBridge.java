@@ -52,6 +52,10 @@ final class GeoBridge {
             return new JSONObject();
         }
         if(!owner.matches("[a-zA-Z0-9-]{1,100}"))throw new Exception();
+        if(command.equals("forget")){
+            if(!s.optString("owner",owner).equals(owner))throw new Exception();
+            GeoRuntime.stop(c);GeoStore.write(c,new JSONObject());return new JSONObject();
+        }
         if(!s.optString("owner",owner).equals(owner)) {
             // Never return the previous account's data to a new account.
             GeoRuntime.stop(c);
@@ -126,6 +130,19 @@ final class GeoBridge {
         while(keys.hasNext())if(!java.util.Set.of("mode","latitude","longitude","radius","arrivalMinutes","exitMinutes","days","usualStart","usualEnd").contains(keys.next()))throw new Exception();
     }
     static void permissions(Activity a) {
+        android.content.SharedPreferences prefs=a.getSharedPreferences("device_security",Context.MODE_PRIVATE);
+        if(!prefs.getBoolean("location_disclosure_v1",false)){
+            JSONObject locale=new JSONObject();try{locale=GeoStore.read(a);}catch(Exception ignored){}
+            new AlertDialog.Builder(a).setTitle("Zeitkonto")
+                .setMessage(GeoRuntime.text(locale,
+                    "A Zeitkonto utiliza localização precisa, incluindo em segundo plano e com a app fechada, para detetar a chegada e saída do trabalho e propor ou criar registos. É opcional e pode ser desativado nas Definições. Não guardamos um histórico de percursos.",
+                    "Zeitkonto nutzt den präzisen Standort auch im Hintergrund und bei geschlossener App, um Ankunft und Abfahrt zu erkennen und Einträge vorzuschlagen oder zu erstellen. Optional und in den Einstellungen abschaltbar. Kein Bewegungsverlauf wird gespeichert.",
+                    "Zeitkonto uses precise location, including in the background and when closed, to detect arrival and departure and suggest or create work entries. This is optional and can be disabled in Settings. No route history is stored.",
+                    "Zeitkonto, işe varış ve ayrılışı algılayıp kayıt önermek veya oluşturmak için arka planda ve kapalıyken kesin konumu kullanır. İsteğe bağlıdır ve Ayarlar'dan kapatılabilir. Güzergâh geçmişi saklanmaz."))
+                .setNegativeButton(android.R.string.cancel,null)
+                .setPositiveButton(android.R.string.ok,(d,w)->{prefs.edit().putBoolean("location_disclosure_v1",true).apply();permissions(a);}).show();
+            return;
+        }
         if(a.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
             a.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},861);return;
         }

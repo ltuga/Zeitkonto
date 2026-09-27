@@ -23,3 +23,9 @@ export function applyAction(q,action,now=Date.now(),id=crypto.randomUUID()){
  else throw Error('Ação inválida.');}
  next.dirty=true;next.updated=now;return next;
 }
+
+export function readOwnedOutbox(storage=localStorage){
+ try{const q=readOutbox(storage),session=JSON.parse(storage.getItem('zeitkonto-auth')||'null'),identity=JSON.parse(storage.getItem('zeitkonto-offline-user')||'null');
+ return q&&session?.user?.id===q.owner&&identity?.id===q.owner?q:null;
+ }catch{return null;}
+}

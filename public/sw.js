@@ -1,5 +1,5 @@
 // Cache only the public offline time-entry screen. Never cache API responses or authenticated HTML.
-const CACHE='zeitkonto-offline-v19';
+const CACHE='zeitkonto-offline-v20';
 const FILES=['/theme.js','/theme.css','/offline.html','/offline-page.js','/offline-core.js','/offline-translations.js','/favicon.svg','/icons/icon-192.png','/icons/icon-512.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('zeitkonto-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

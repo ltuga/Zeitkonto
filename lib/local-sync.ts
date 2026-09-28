@@ -1,6 +1,6 @@
 'use client';
 import {authenticatedFetch} from './auth-client';
-import {dateLocal,stateSchema,type State} from './time';
+import {dateLocal,stateSchema,type State,type Entry} from './time';
 import {diffState,restoreState,type SyncRow,type Snapshot} from './sync-model';
 import {captureChanges} from './change-history';
 import {readOutbox,KEY} from './offline-work';
@@ -18,10 +18,13 @@ export async function saveLocal(owner:string,before:State,next:State,reset=false
 export async function loadAndSync(owner:string):Promise<LocalState>{return withSyncLock(async()=>{let local=await readLocal(owner);if(!navigator.onLine){if(local)return local;throw Error('Abre a app com Internet antes da primeira utilização.');}
  try{const get=await authenticatedFetch('/api/sync?today='+dateLocal());if(!get.ok)throw Error('Não foi possível sincronizar.');let snapshot=await get.json() as Snapshot;
  // One-time import of the previous offline work queue, before retiring its public screen.
- const q=readOutbox();if(q?.owner===owner&&q.dirty){const changes:SyncRow[]=[...q.records.map((r:any)=>({entity:'entry',id:r.id,value:r,updated_at:new Date(q.updated).toISOString(),mutation_id:'old-offline-'+r.id})),{entity:'setting',id:'active',value:q.active,updated_at:new Date(q.updated).toISOString(),mutation_id:'old-offline-active'}];local=local??{owner,state:restoreState(snapshot.rows),pending:[],lastSync:null,clock:Date.now()};local.pending.push(...changes);await writeLocal(local);localStorage.removeItem(KEY);}
+ const q=readOutbox();if(q?.owner===owner&&q.dirty){const changes:SyncRow[]=[...q.records.map((r:Entry)=>({entity:'entry',id:r.id,value:r,updated_at:new Date(q.updated).toISOString(),mutation_id:'old-offline-'+r.id})),{entity:'setting',id:'active',value:q.active,updated_at:new Date(q.updated).toISOString(),mutation_id:'old-offline-active'}];local=local??{owner,state:restoreState(snapshot.rows),pending:[],lastSync:null,clock:Date.now()};local.pending.push(...changes);await writeLocal(local);localStorage.removeItem(KEY);}
  if(local?.pending.length){const r=await authenticatedFetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({today:dateLocal(),changes:local.pending})});if(!r.ok)throw Error('Não foi possível sincronizar.');snapshot=await r.json();}
  const result={owner,state:restoreState(snapshot.rows),pending:[],lastSync:snapshot.server_time,clock:Math.max(+new Date(snapshot.server_time),local?.clock??0),offsetMs:+new Date(snapshot.server_time)-Date.now()};await writeLocal(result);window.dispatchEvent(new Event('zeitkonto-pending'));return result;
  }catch(e){if(local)return {...local,syncError:true};throw e;}
  });}
 const events=new Map<string,number>();
-export function analytics(event:'app_open'|'work_entry'|'vacation'|'settings'|'calendar'|'shifts'|'export'|'sync'){if(!navigator.onLine||document.visibilityState==='hidden')return;const now=Date.now();if(now-(events.get(event)??0)<300000)return;events.set(event,now);let device=localStorage.getItem('zeitkonto-device-id');if(!device){device=crypto.randomUUID();localStorage.setItem('zeitkonto-device-id',device)}void authenticatedFetch('/api/analytics',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({device,version:'1.19.0',platform:/Android/i.test(navigator.userAgent)?'android':/iPhone|iPad/i.test(navigator.userAgent)?'ios':'web',event})}).catch(()=>{});}
+let telemetryAllowed=false;
+export function allowTelemetry(enabled:boolean){telemetryAllowed=enabled;if(!enabled)events.clear();}
+
+export function analytics(event:'app_open'|'work_entry'|'vacation'|'settings'|'calendar'|'shifts'|'export'|'sync'){if(!telemetryAllowed||!navigator.onLine||document.visibilityState==='hidden')return;const now=Date.now();if(now-(events.get(event)??0)<300000)return;events.set(event,now);let device=localStorage.getItem('zeitkonto-device-id');if(!device){device=crypto.randomUUID();localStorage.setItem('zeitkonto-device-id',device)}void authenticatedFetch('/api/analytics',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({device,version:'0.2.1',platform:/Android/i.test(navigator.userAgent)?'android':/iPhone|iPad/i.test(navigator.userAgent)?'ios':'web',event})}).catch(()=>{});}

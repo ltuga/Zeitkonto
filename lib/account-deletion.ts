@@ -6,9 +6,9 @@ export async function deletionMarker(owner:string) {
 export async function accountBlocked(db:D1Database,owner:string) {
  return !!await db.prepare('SELECT owner FROM time_accounts WHERE owner=?').bind(await deletionMarker(owner)).first();
 }
-export async function beginAccountDeletion(db:D1Database,owner:string) {
+export async function beginAccountDeletion(db:D1Database,owner:string,now=Date.now()) {
  await db.batch([
-  db.prepare('INSERT OR IGNORE INTO time_accounts(owner,payload,version) VALUES(?,?,0)').bind(await deletionMarker(owner),'{}'),
+  db.prepare('INSERT OR IGNORE INTO time_accounts(owner,payload,version) VALUES(?,?,?)').bind(await deletionMarker(owner),'{}',now),
   db.prepare('DELETE FROM time_accounts WHERE owner=?').bind(owner),
  ]);
 }

@@ -16,9 +16,9 @@ test('daily targets preserve raw entries; bank only credits weekly surplus',()=>
 test('offline active shift keeps its own target after settings change',()=>{
  const m=new Map(),storage={getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,v)};remember('a',{...empty,dailyMinutes:360,includedPause:0},true,storage);const start=+new Date('2026-09-12T06:00:00');let q=applyAction(readOutbox(storage),'start',start);q.targetMinutes=480;q=applyAction(q,'finish',start+360*60000,'part-time');assert.equal(q.records[0].targetMinutes,360);assert.equal(q.records[0].delta,0);
 });
-test('edit and delete history retains recoverable snapshots and newest 300 changes',()=>{
+test('edit history retains snapshots; deletion removes payloads from history',()=>{
  const {captureChanges}=modules['change-history'];const before={...empty,records:[r]},next={...before,records:[{...r,note:'corrected'}]};const logs=captureChanges(before,next,'2026-09-12T14:00:00Z');assert.equal(logs.length,1);assert.equal(logs[0].action,'edit');assert.equal(JSON.parse(logs[0].before).note,'');assert.equal(JSON.parse(logs[0].after).note,'corrected');
- const deleted=captureChanges({...next,changes:logs},{...next,records:[]});assert.equal(deleted[0].action,'delete');assert.deepEqual(recordSchema.parse(JSON.parse(deleted[0].before)),next.records[0]);assert.equal(captureChanges({...before,changes:Array(300).fill(logs[0])},next).length,300);
+ const deleted=captureChanges({...next,changes:logs},{...next,records:[]});assert.equal(deleted[0].action,'delete');assert.deepEqual(JSON.parse(deleted[0].before),{id:r.id});assert.equal(deleted.length,1);assert.ok(!JSON.stringify(deleted).includes("corrected"));assert.equal(captureChanges({...before,changes:Array(300).fill(logs[0])},next).length,300);
 });
 test('monthly report uses record targets, excludes future work and includes booked absences',()=>{
  const s=stateSchema.parse({...empty,records:[r,{...r,id:'future',date:'2026-09-20',delta:60},{...r,id:'leave',kind:'holiday',date:'2026-09-21'}]});const m=modules['month-summary'].monthSummary(s,'2026-09','2026-09-12');assert.equal(m.expected,360);assert.equal(m.credited,360);assert.equal(m.days,1);assert.equal(m.holidays,1);

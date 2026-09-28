@@ -185,3 +185,14 @@ Logout preserva alterações pendentes, ocultando-as até novo login da mesma co
 ## Contacto público
 
 Desenvolvedor: **Ltuga**. Suporte e privacidade: **Ltugamatos@gmail.com**. Página pública `/support`; eliminação em `/delete-account`. Estes dados foram confirmados pelo responsável. A página de apoio não substitui a política de privacidade final, cujas pendências estão no rascunho técnico.
+
+## Privacidade e preparação Google Play (28/09/2026)
+
+Política acessível em `/privacy`, contacto em `/support` e eliminação em `/delete-account`.
+As estatísticas são opcionais e verificadas no servidor; as novas alterações a registos de doença pedem consentimento explícito.
+
+- [Ficha Data Safety e confirmações pendentes](docs/google-play-data-safety.md)
+- [Roteiro de testes reais Android](docs/android-real-device-tests.md)
+- [Relatório da fase](docs/privacy-security-release.md)
+
+Migrations aplicadas: `20260928025114_privacy_reconciliation_consent.sql` e `20260928025253_privacy_rpc_hardening.sql`. A manutenção usa o segredo de cron existente, exclusivamente no servidor; não adicionar service_role ao cliente. O rollback conjunto está em `supabase/rollback/privacy_reconciliation_consent.sql` e requer rollback coordenado da app.

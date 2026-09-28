@@ -1,7 +1,6 @@
 import {stateSchema,type State} from './time';
 import {authenticatedFetch} from './auth-client';
 // Shared by the lightweight offline screen and the authenticated app.
-// @ts-ignore plain JavaScript module is also executed directly by the service worker fallback
 import {KEY,readOutbox,writeOutbox,remember,mergeOutbox,locked} from '../public/offline-core.js';
 export {KEY,readOutbox,remember,locked};
 export async function reconcileOffline(owner:string,state:State,version:number){if(!readOutbox())return {state,version};return locked(async()=>{

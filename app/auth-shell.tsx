@@ -11,7 +11,7 @@ import {initializeAuth,authClient,authenticatedFetch} from '@/lib/auth-client';
 import {translate} from '@/lib/i18n';
 import {readOfflineIdentity} from '@/lib/offline-identity';
 import '@/lib/auth-i18n';
-import {readLocal,hasPending,deleteLocal} from '@/lib/local-sync';
+import {readLocal,hasPending,deleteLocal,allowTelemetry} from '@/lib/local-sync';
 import Home from './time-app';
 import {clearDeviceSession,logoutFromDevice} from '@/lib/logout';
 import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/components/ui/select';
@@ -36,11 +36,11 @@ export default function AuthShell({url,publishableKey}:{url:string;publishableKe
  useEffect(()=>{document.documentElement.lang=lang},[lang]);
  useEffect(()=>{if(!('serviceWorker' in navigator))return;void navigator.serviceWorker.register('/sw.js').then(()=>navigator.serviceWorker.ready).then(reg=>{const assets=[...document.querySelectorAll('script[src],link[rel="stylesheet"]')].map(e=>e.getAttribute('src')||e.getAttribute('href')).filter(Boolean).concat(performance.getEntriesByType('resource').map(e=>e.name).filter(url=>/\.(js|css)(\?|$)/.test(url)));reg.active?.postMessage({type:'CACHE_PUBLIC_SHELL',assets})}).catch(()=>{})},[]);
 
- useEffect(()=>{if(!user){setReady(false);return}let live=true;setReady(false);if(!navigator.onLine){readLocal(user.id).then(local=>{if(live&&local)setReady(true)});return()=>{live=false}}authenticatedFetch('/api/import-legacy',{method:'POST'}).then(r=>{if(!r.ok)throw Error();if(live)setReady(true)}).catch(async()=>{if(await readLocal(user.id)){if(live)setReady(true)}else if(live)setError('Não foi possível carregar a conta. Tenta novamente.')});return()=>{live=false}},[user?.id,retry]);
+ useEffect(()=>{let live=true;queueMicrotask(()=>{if(live)setReady(false)});if(!user)return()=>{live=false};if(!navigator.onLine){readLocal(user.id).then(local=>{if(live&&local)setReady(true)});return()=>{live=false}}authenticatedFetch('/api/import-legacy',{method:'POST'}).then(r=>{if(!r.ok)throw Error();if(live)setReady(true)}).catch(async()=>{if(await readLocal(user.id)){if(live)setReady(true)}else if(live)setError('Não foi possível carregar a conta. Tenta novamente.')});return()=>{live=false}},[user?.id,retry]);
  function changeMode(next:Mode){setMode(next);setPassword('');setConfirm('');setError('');setNotice('')}
  function authError(code?:string){if(code==='invalid_credentials')return 'Email ou palavra-passe incorretos.';if(code==='email_not_confirmed')return 'Confirma o teu email antes de entrar.';if(code?.includes('rate_limit')||code==='over_request_rate_limit')return 'Demasiadas tentativas. Aguarda alguns minutos.';if(code==='weak_password')return 'Escolhe uma palavra-passe mais forte.';if(code==='same_password')return 'Escolhe uma palavra-passe diferente da anterior.';return 'Não foi possível concluir. Tenta novamente ou verifica a configuração de email.'}
  async function signOut(){
-  if(busy)return;setBusy(true);setError('');
+  if(busy)return;setBusy(true);setError('');allowTelemetry(false);
   try{
    if(user&&hasGeoNative()){try{await geoCommand(user.id,'logout')}catch{await geoCommand(user.id,'suspend')}}
    const queue=readOutbox();
@@ -60,7 +60,7 @@ export default function AuthShell({url,publishableKey}:{url:string;publishableKe
  }catch(e){setError(authError((e as {code?:string}).code))}finally{setBusy(false)}}
  const title=mode==='signup'?'Criar conta':mode==='forgot'?'Recuperar palavra-passe':mode==='reset'?'Alterar palavra-passe':'Entrar na tua conta';
  if(user&&ready&&mode!=='reset')return <><Home owner={user.id} key={user.id} email={user.email??''} authBusy={busy} onSignOut={signOut} onPasswordChange={()=>changeMode('reset')}/>{error&&<p className="error auth-toast" role="alert">{t(error)}</p>}</>;
- return <main className="auth-page zeit-auth"><header className="top"><a className="brand" href="/"><span className="logo"><Clock3/></span>Zeitkonto<span className="brand-dot">.</span></a><Select value={preference} onValueChange={changeLanguage}><SelectTrigger aria-label={t('Idioma')} className="language-trigger"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="auto">{t("Automático (telemóvel)")}</SelectItem><SelectItem value="pt">Português</SelectItem><SelectItem value="de">Deutsch</SelectItem><SelectItem value="en">English</SelectItem><SelectItem value="tr">Türkçe</SelectItem></SelectContent></Select></header>
+ return <main className="auth-page zeit-auth"><header className="top"><Link className="brand" href="/"><span className="logo"><Clock3/></span>Zeitkonto<span className="brand-dot">.</span></Link><Select value={preference} onValueChange={changeLanguage}><SelectTrigger aria-label={t('Idioma')} className="language-trigger"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="auto">{t("Automático (telemóvel)")}</SelectItem><SelectItem value="pt">Português</SelectItem><SelectItem value="de">Deutsch</SelectItem><SelectItem value="en">English</SelectItem><SelectItem value="tr">Türkçe</SelectItem></SelectContent></Select></header>
  <section className="auth-wrap"><div className="auth-intro"><p className="eyebrow">{t('TEMPO PARA O QUE IMPORTA')}</p><h1>{t('O teu tempo, em dia.')}</h1><p className="muted">{t('Trabalho, férias e descanso. Tudo contado.')}</p></div><div className="panel auth-card"><LockKeyhole size={27}/><h2>{t(title)}</h2>
  {loading?<p role="status">{t('A carregar…')}</p>:user&&mode!=='reset'?<><p role="status">{t('A carregar…')}</p>{error&&<><p className="error" role="alert">{t(error)}</p><button className="primary" onClick={()=>{setError('');setRetry(r=>r+1)}}>{t('Tentar novamente')}</button><button className="text-button" onClick={signOut}>{t('Terminar sessão')}</button></>}</>:<form onSubmit={submit}>
  {mode!=='reset'&&<label>Email<input type="email" autoComplete="email" required maxLength={254} value={email} onChange={e=>setEmail(e.target.value)}/></label>}

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type {Language} from '@/lib/i18n';
 import {publisher} from '@/lib/publisher';
 const labels={
@@ -8,5 +9,5 @@ const labels={
 };
 export function SupportContact({lang}:{lang:Language}){
  const t=labels[lang];
- return <div style={{marginTop:16,overflowWrap:'anywhere'}}><p>{t.developer}: <strong>{publisher.name}</strong></p><p>{t.contact}: <a href={'mailto:'+publisher.email}>{publisher.email}</a></p></div>;
+ return <div style={{marginTop:16,overflowWrap:'anywhere'}}><p>{t.developer}: <strong>{publisher.name}</strong></p><p>{t.contact}: <a href={'mailto:'+publisher.email}>{publisher.email}</a></p><p><Link href="/privacy">{({pt:"Política de privacidade",de:"Datenschutzerklärung",en:"Privacy policy",tr:"Gizlilik politikası"})[lang]}</Link></p></div>;
 }

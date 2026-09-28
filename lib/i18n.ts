@@ -457,7 +457,7 @@ export const messages:Record<string,Record<string,string>> = {
     "tr": "Bu gün {hours} saat düşer. Mevcut bakiye: {balance}. Gelecekteki izin günleri bakiyeden hemen ayrılır."
   }
 };
-export function translate(lang:Language,key:string,values:Record<string,string|number>={}){let value=lang==="pt"?key:messages[key]?.[lang]??key;return value.replace(/\{(\w+)\}/g,(_,name)=>String(values[name]??"{"+name+"}"));}
+export function translate(lang:Language,key:string,values:Record<string,string|number>={}){const value=lang==="pt"?key:messages[key]?.[lang]??key;return value.replace(/\{(\w+)\}/g,(_,name)=>String(values[name]??"{"+name+"}"));}
 export function formatMinutes(lang:Language,minutes:number){const m=Math.round(minutes),a=Math.abs(m);const units={pt:["h","m"],de:[" Std."," Min."],en:["h","m"],tr:[" sa"," dk"]}[lang];return `${m<0?"−":""}${Math.floor(a/60)}${units[0]} ${String(a%60).padStart(2,"0")}${units[1]}`;}
 
 Object.assign(messages,{

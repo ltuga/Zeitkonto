@@ -1,35 +1,7 @@
-# Privacidade e Data Safety — rascunho técnico 0.2.1
+# Documento histórico substituído
 
-Não publicar como política final. Nome público do desenvolvedor confirmado: **Ltuga**. Contacto público de suporte e privacidade: **Ltugamatos@gmail.com**. Permanecem por confirmar os prazos reais de retenção e contratos/regiões dos fornecedores. O nome comercial não substitui a identificação legal eventualmente necessária.
+A implementação atual da política está em `app/privacy/page.tsx` e a ficha para revisão em `docs/google-play-data-safety.md`. O relatório em `docs/privacy-security-release.md` distingue implementação de validações ainda pendentes.
 
-| Dados | Finalidade e armazenamento |
-|---|---|
-| Email, ID, autenticação | Supabase Auth. A reautenticação para eliminar passa por HTTPS no servidor; não há logging da password. |
-| Trabalho, pausas, férias, doença, saldos, empresa, configurações | Supabase, cache local e cópia Cloudflare D1 usada pelos lembretes. Doença é informação sensível mesmo sem diagnóstico. |
-| Local de trabalho | Deteção opcional Android, envelope local cifrado com Keystore. Sem histórico contínuo de percursos; eventos transformados em registos sincronizados. |
-| Morada/mapa | Consultas OpenStreetMap/Nominatim podem transmitir IP, morada/coordenadas. Não declarar que toda a localização permanece no telefone. |
-| Versão, dispositivo lógico, último acesso, uso de funcionalidades | Analytics próprio Supabase; confirmar opção de consentimento e base legal. Não identificado SDK de publicidade. |
-| Subscrição push e idioma/fuso | Lembretes Supabase/D1/provedor push. Hashes de entregas expiram pelo scheduler após sete dias. |
-| Marca de eliminação | Hash SHA-256 do owner, payload vazio em D1. Pseudonimizado, não anonimizado. Impede que pedidos antigos recriem dados; definir retenção operacional. |
-| Logs/backups | Confirmar prazos efetivos Supabase/Cloudflare. Eliminar dados ativos não significa remoção imediata dos backups. |
+Correção ao rascunho anterior: a pesquisa de moradas usa **Photon/Komoot**, não Nominatim. A marca de eliminação tem retenção de 30 dias; existe reconciliação D1, consentimento de analytics verificado no servidor e eliminação de estatísticas da própria conta.
 
-## Eliminação
-
-`/delete-account` é acessível sem uma sessão prévia e também nas definições. Exige login, confirmação DELETE e reautenticação. O owner é derivado da identidade validada. D1 elimina a cópia e cria marca numa transação, depois o servidor chama a RPC de eliminação da própria conta. Não usa service_role. Uma falha na segunda operação requer repetir pela página pública; APIs normais bloqueiam a conta marcada. Nenhuma conta real foi eliminada durante desenvolvimento.
-
-Após sucesso, tenta limpar apenas IndexedDB/outbox/sessão da conta eliminada e o envelope nativo. Falhas de limpeza são mostradas. Dispositivos offline não podem ser apagados remotamente: instruir a terminar sessão e limpar dados locais. O APK antigo não suporta a nova operação nativa de limpeza.
-
-A RPC Supabase já existente continua disponível ao utilizador autenticado. Uma chamada direta fora deste novo fluxo pode contornar a limpeza auxiliar D1; antes da publicação, validar uma estratégia de reconciliação de contas removidas por RPC/admin. Não afirmar cobertura de todos os canais de eliminação.
-
-## Data Safety — classificação a confirmar
-
-Informação pessoal (email/ID e nome se preenchido), saúde (doença), atividade da app, identificadores de instalação/push, localização opcional e consultas a mapas. HTTPS em trânsito. Não declarar cifra própria de todo o IndexedDB/WebView. Classificar fornecedores e partilha segundo contratos; não marcar automaticamente “nenhuma partilha”.
-
-Fontes oficiais: https://support.google.com/googleplay/android-developer/answer/10144311 e https://support.google.com/googleplay/android-developer/answer/13327111.
-
-## Confirmações do responsável
-
-- Confirmados pelo utilizador: **Ltuga** e **Ltugamatos@gmail.com**. Disponíveis na app, em `/support` e na página de eliminação.
-- Regiões, contratos, prazos de backups/logs e marca técnica.
-- Consentimento/opt-out de analytics e base legal dos dados de doença.
-- Identidade/conta Play Console e requisitos de testes dessa conta.
+A identificação jurídica completa, contratos/transferências e prazos efetivos de backups/logs continuam por validar. Não considerar esses factos comprovados pelo código.

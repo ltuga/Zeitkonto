@@ -1,5 +1,7 @@
 # Zeitkonto — estado atual
 
+Preparação do alojamento independente: [Cloudflare, preservação de dados e validação Android](docs/cloudflare-host.md). Usar `prepare/android-api36-stable-host`; o endereço Android só deve mudar após validar o novo HTTPS.
+
 Segurança/dependências da 0.2.1: [revisão, correções e pendências](docs/security-0.2.1.md), [inventário de todos os avisos](docs/security-0.2.1-dependencies.md). Auditoria: 61 → 4 avisos, zero críticos; não equivale a aprovação para publicação.
 
 Código da aplicação pessoal existente: entrada, saída, pausas, férias, doença, banco de horas, lembretes e localização. A interface principal usa resumos semanais. A noite de domingo pertence à semana seguinte, preservando a data original do registo.

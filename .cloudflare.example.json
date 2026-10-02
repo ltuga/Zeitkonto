@@ -1,0 +1,10 @@
+{
+  "workerName": "zeitkonto",
+  "accountId": "",
+  "databaseName": "",
+  "databaseId": "",
+  "supabaseUrl": "",
+  "supabasePublishableKey": "",
+  "vapidPublicKey": "",
+  "dataMigrationVerified": false
+}

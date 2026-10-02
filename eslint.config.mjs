@@ -12,6 +12,7 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "outputs/**", // Generated local previews, not application source.
+    ".cloudflare/**", // Local deployment config and dry-run output.
     "next-env.d.ts",
   ]),
   {

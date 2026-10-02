@@ -53,3 +53,6 @@ next-env.d.ts
 *.jks
 *.p12
 *.pfx
+.dev.vars*
+/.cloudflare/
+/.cloudflare.settings.json

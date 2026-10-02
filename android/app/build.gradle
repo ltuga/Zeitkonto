@@ -1,9 +1,11 @@
 plugins { id 'com.android.application' }
 
 def testStore = providers.environmentVariable('ZEITKONTO_TEST_KEYSTORE').orNull
+def uploadStore = providers.environmentVariable('ZEITKONTO_UPLOAD_KEYSTORE').orNull
 android {
     namespace 'com.ltuga.zeitkonto'
     compileSdk 36
+    buildToolsVersion '36.0.0'
     defaultConfig {
         applicationId 'com.ltuga.zeitkonto'
         minSdk 30
@@ -20,10 +22,22 @@ android {
                 keyPassword providers.environmentVariable('ZEITKONTO_TEST_KEY_PASSWORD').orNull
             }
         }
+        playUpload {
+            if (uploadStore != null) {
+                storeFile file(uploadStore)
+                storePassword providers.environmentVariable('ZEITKONTO_UPLOAD_STORE_PASSWORD').orNull
+                keyAlias providers.environmentVariable('ZEITKONTO_UPLOAD_KEY_ALIAS').orNull
+                keyPassword providers.environmentVariable('ZEITKONTO_UPLOAD_KEY_PASSWORD').orNull
+            }
+        }
     }
     buildTypes {
         debug { applicationIdSuffix '.test'; versionNameSuffix '-test'; debuggable false; signingConfig testStore != null ? signingConfigs.testUpdate : null }
-        release { minifyEnabled false }
+        release {
+            minifyEnabled false
+            debuggable false
+            signingConfig uploadStore != null ? signingConfigs.playUpload : null
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17

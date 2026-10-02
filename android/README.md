@@ -1,5 +1,30 @@
 # Zeitkonto Android — 0.2.1
 
+## Preparação para teste e Google Play — 3 de outubro de 2026
+
+A configuração atual é `compileSdk 36`, `targetSdk 36`, `versionCode 6` e `versionName 0.2.1`.
+O endereço continua a ser o Site existente, recuperado e verificado; a migração Cloudflare não foi concluída.
+Sem a chave de testes original, `assembleDebug` gera um APK **não assinado**, que não é instalável.
+Não gerar uma chave substituta nem desinstalar a aplicação para contornar este bloqueio.
+
+Para uma atualização de testes, configurar fora do Git `ZEITKONTO_TEST_KEYSTORE`,
+`ZEITKONTO_TEST_STORE_PASSWORD`, `ZEITKONTO_TEST_KEY_ALIAS` e `ZEITKONTO_TEST_KEY_PASSWORD`.
+O pacote continua `com.ltuga.zeitkonto.test`; comparar o certificado com o APK anterior antes de entregar.
+
+Para o AAB de produção, usar uma chave de upload própria, guardada fora do Git, através de
+`ZEITKONTO_UPLOAD_KEYSTORE`, `ZEITKONTO_UPLOAD_STORE_PASSWORD`, `ZEITKONTO_UPLOAD_KEY_ALIAS`
+e `ZEITKONTO_UPLOAD_KEY_PASSWORD`. Nunca reutilizar a chave de testes para produção.
+Sem estas variáveis, `bundleRelease` gera apenas o AAB não assinado para inspeção.
+
+Build com JDK 17, SDK Android 36 e Build Tools 36.0.0:
+
+```sh
+./gradlew assembleDebug lintDebug bundleRelease lintRelease
+```
+
+Ver [preparação Google Play](../docs/playstore-preparation-2026-10-03.md).
+As secções abaixo são históricas; a configuração atual acima prevalece.
+
 ## Preparação API 36 — 27 de setembro de 2026
 
 Código atual: `compileSdk 36`, `targetSdk 36`, `minSdk 30`, AGP 8.10.1, Gradle 8.11.1 e JDK 17. Mantém `versionCode 5` e `versionName 0.2.1`. Ver [relatório e reprodução](../docs/release-0.2.1.md).

@@ -16,6 +16,10 @@ public final class ZeitkontoRepository {
         if(email==null||email.trim().isEmpty()||password==null||password.isEmpty())throw new IllegalArgumentException();
         return supabase.signIn(email.trim(),password);
     }
+    public JSONObject signUp(String email,String password)throws Exception{
+        if(email==null||email.trim().isEmpty()||password==null||password.length()<6)throw new IllegalArgumentException("A palavra-passe deve ter pelo menos 6 caracteres.");
+        return supabase.signUp(email.trim(),password);
+    }
     public JSONObject load()throws Exception{return supabase.sync(new JSONArray(),LocalDate.now().toString());}
     public JSONObject push(JSONArray changes)throws Exception{return supabase.sync(changes==null?new JSONArray():changes,LocalDate.now().toString());}
 

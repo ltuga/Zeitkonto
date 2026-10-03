@@ -43,6 +43,11 @@ public final class SupabaseGateway {
         return result;
     }
 
+    public JSONArray get(String path) throws Exception {
+        try { return requestArray("GET", path, true); }
+        catch (Unauthorized first) { refresh(); return requestArray("GET", path, true); }
+    }
+
     public JSONObject sync(JSONArray changes, String today) throws Exception {
         JSONObject body = new JSONObject().put("p_changes", changes).put("p_today", today);
         try {
@@ -68,6 +73,17 @@ public final class SupabaseGateway {
     }
 
     private SharedPreferences prefs() { return context.getSharedPreferences(SESSION_PREFS, Context.MODE_PRIVATE); }
+
+    private JSONArray requestArray(String method,String path,boolean authenticated)throws Exception{
+        HttpURLConnection c=(HttpURLConnection)new URL(BuildConfig.SUPABASE_URL+path).openConnection();
+        c.setRequestMethod(method);c.setConnectTimeout(15000);c.setReadTimeout(20000);
+        c.setRequestProperty("apikey",BuildConfig.SUPABASE_PUBLISHABLE_KEY);
+        if(authenticated){String token=prefs().getString(ACCESS,"");if(token.isEmpty())throw new Unauthorized();c.setRequestProperty("Authorization","Bearer "+token);}
+        int status=c.getResponseCode();BufferedReader reader=new BufferedReader(new InputStreamReader(status>=200&&status<300?c.getInputStream():c.getErrorStream(),StandardCharsets.UTF_8));
+        StringBuilder text=new StringBuilder();String line;while((line=reader.readLine())!=null)text.append(line);reader.close();c.disconnect();
+        if(status==401)throw new Unauthorized();if(status<200||status>=300)throw new IllegalStateException("Supabase HTTP "+status);
+        return new JSONArray(text.toString());
+    }
 
     private JSONObject request(String method, String path, JSONObject body, boolean authenticated) throws Exception {
         HttpURLConnection c = (HttpURLConnection) new URL(BuildConfig.SUPABASE_URL + path).openConnection();

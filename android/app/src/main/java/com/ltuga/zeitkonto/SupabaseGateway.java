@@ -34,6 +34,11 @@ public final class SupabaseGateway {
         return result;
     }
 
+    public JSONObject signUp(String email, String password) throws Exception {
+        JSONObject body = new JSONObject().put("email", email).put("password", password);
+        return request("POST", "/auth/v1/signup", body, false);
+    }
+
     public JSONObject refresh() throws Exception {
         String token = prefs().getString(REFRESH, "");
         if (token.isEmpty()) throw new IllegalStateException("No refresh token");
@@ -106,7 +111,15 @@ public final class SupabaseGateway {
         while ((line = reader.readLine()) != null) text.append(line);
         reader.close(); c.disconnect();
         if (status == 401) throw new Unauthorized();
-        if (status < 200 || status >= 300) throw new IllegalStateException("Supabase HTTP " + status);
+        if (status < 200 || status >= 300) {
+            String message = "Supabase HTTP " + status;
+            try {
+                JSONObject error = new JSONObject(text.toString());
+                String detail = error.optString("msg", error.optString("message", error.optString("error_description", "")));
+                if (!detail.isEmpty()) message = detail;
+            } catch (Exception ignored) {}
+            throw new IllegalStateException(message);
+        }
         String raw = text.toString().trim();
         return raw.isEmpty() ? new JSONObject() : new JSONObject(raw);
     }

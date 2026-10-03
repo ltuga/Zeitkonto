@@ -1,27 +1,11 @@
 <resources>
-    <string name="app_name">Zeitkonto Test</string>
-    <string name="options">Seçenekler</string>
-    <string name="locked">Zeitkonto kilitli</string>
-    <string name="unlock">Kilidi aç</string>
-    <string name="biometric_prompt">Biyometri veya telefon PIN koduyla aç</string>
-    <string name="no_biometric">Önce Android ayarlarında güvenli ekran kilidi oluştur. Biyometri kullanılamıyorsa telefon PIN kodunu kullan.</string>
-    <string name="connection_error">Zeitkonto açılamadı. İlk giriş için İnternete bağlan. Önceden kaydedilmiş sayfalar çevrimdışı kullanılabilir.</string>
-    <string name="retry">Tekrar dene</string>
-    <string name="device_lock">Parmak izi / uygulama kilidi</string>
-    <string name="print">Yazdır / PDF kaydet</string>
-    <string name="browser">Tarayıcıda aç</string>
-    <string name="about">Bu test sürümü hakkında</string>
-    <string name="disable_lock">Bu cihazda Zeitkonto kilidi kapatılsın mı?</string>
-    <string name="enable_lock">Zeitkonto uygulamasına her dönüşte güçlü biyometri veya telefon PIN kodu iste. E-posta ile giriş yine gereklidir.</string>
-    <string name="print_confirm">Geçerli görünümü yazdır veya PDF olarak kaydet? Yıllık takvim için önce uygulamada yıl görünümünü seç.</string>
-    <string name="no_browser">Bu cihazda tarayıcı yok.</string>
-    <string name="about_text">Android test sürümü 0.1.2. Mevcut Zeitkonto web sitesini ve Supabase hesabını kullanır. Yerel arka plan hatırlatıcıları ve satın almalar henüz dahil değildir. Çevrimdışı yeniden açma ve yazdırma cihazda test edilmelidir. E-posta bağlantıları tarayıcıda da kullanılabilir. Yerel veriler Android özel uygulama alanında saklanır; web veritabanına ek Keystore şifrelemesi henüz uygulanmaz. Uygulamayı kaldırmak eşitlenmemiş değişiklikleri siler.</string>
-    <string name="back_again_exit">Çıkmak için tekrar Geri tuşuna basın.</string>
-    <string name="widget_name">Zeitkonto kısayolları</string>
-    <string name="widget_open">Zeitkonto uygulamasını aç</string>
-    <string name="widget_subtitle">Zamanın bir dokunuş uzağında</string>
-    <string name="widget_record">Süre kaydet</string>
-    <string name="widget_calendar">Takvim</string>
-    <string name="widget_balance">Bakiye</string>
-    <string name="widget_description">Zeitkonto içinde zaman kaydını, takvimi veya bakiyeyi açın.</string>
+<string name="app_name">Zeitkonto</string><string name="locked">Zeitkonto kilitli</string><string name="unlock">Kilidi aç</string>
+<string name="biometric_prompt">Biyometri veya telefon PIN koduyla aç</string><string name="no_biometric">Önce Android ayarlarında güvenli ekran kilidi oluştur.</string>
+<string name="email">E-posta</string><string name="password">Şifre</string><string name="sign_in">Giriş yap</string><string name="sign_out">Çıkış yap</string>
+<string name="sync">Eşitle</string><string name="syncing">Eşitleniyor…</string><string name="signed_out">Zeitkonto hesabına giriş yap.</string><string name="signed_in">Supabase bağlantısı kuruldu</string>
+<string name="sync_ok">Zeitkonto verileri eşitlendi.</string><string name="sync_error">Eşitleme yapılamadı. Bağlantıyı ve girişi kontrol et.</string><string name="login_error">Giriş başarısız. E-posta ve şifreyi kontrol et.</string>
+<string name="device_lock">Parmak izi / cihaz kilidi</string><string name="enable_lock">Zeitkonto uygulamasına dönerken biyometri veya telefon PIN kodu istensin mi?</string><string name="disable_lock">Zeitkonto cihaz kilidi kapatılsın mı?</string>
+<string name="about">Hakkında</string><string name="about_text">Zeitkonto 0.3.0 bağımsız Android testi. Doğrudan Supabase bağlantısı kullanır; web sitesi veya Cloudflare gerekmez.</string>
+<string name="back_again_exit">Çıkmak için tekrar Geri tuşuna basın.</string><string name="widget_name">Zeitkonto kısayolları</string><string name="widget_open">Zeitkonto uygulamasını aç</string><string name="widget_subtitle">Zamanın bir dokunuş uzağında</string>
+<string name="widget_record">Süre kaydet</string><string name="widget_calendar">Takvim</string><string name="widget_balance">Bakiye</string><string name="widget_description">Zeitkonto içinde zaman kaydını, takvimi veya bakiyeyi açın.</string>
 </resources>

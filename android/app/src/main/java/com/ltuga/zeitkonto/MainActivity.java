@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
     private LinearLayout root, login;
     private TextView status, summary;
     private EditText email, password;
-    private Button signIn, sync, signOut, lock;
+    private Button signIn, sync, signOut, lock, addWork;
     private boolean unlocked = true, authenticating;
     private CancellationSignal cancellation;
     private long lastBack;
@@ -60,6 +60,7 @@ public class MainActivity extends Activity {
         signIn=new Button(this); signIn.setText(R.string.sign_in); signIn.setOnClickListener(v->doSignIn()); login.addView(signIn); root.addView(login);
 
         sync=new Button(this); sync.setText(R.string.sync); sync.setOnClickListener(v->doSync()); root.addView(sync);
+        addWork=new Button(this); addWork.setText("＋ Registar trabalho"); addWork.setOnClickListener(v->workDialog()); root.addView(addWork);
         signOut=new Button(this); signOut.setText(R.string.sign_out); signOut.setOnClickListener(v->confirmSignOut()); root.addView(signOut);
         lock=new Button(this); lock.setText(R.string.device_lock); lock.setOnClickListener(v->toggleLock()); root.addView(lock);
         Button about=new Button(this); about.setText(R.string.about); about.setOnClickListener(v->new AlertDialog.Builder(this).setTitle("Zeitkonto 0.3.0").setMessage(R.string.about_text).setPositiveButton(android.R.string.ok,null).show()); root.addView(about);
@@ -72,7 +73,7 @@ public class MainActivity extends Activity {
         boolean signed=repo.isSignedIn();
         login.setVisibility(signed?View.GONE:View.VISIBLE);
         sync.setVisibility(signed?View.VISIBLE:View.GONE);
-        signOut.setVisibility(signed?View.VISIBLE:View.GONE);
+        signOut.setVisibility(signed?View.VISIBLE:View.GONE); addWork.setVisibility(signed?View.VISIBLE:View.GONE);
         status.setText(signed?R.string.signed_in:R.string.signed_out);
         if (!signed) summary.setText("");
     }
@@ -103,6 +104,13 @@ public class MainActivity extends Activity {
     }
 
     private String describe(JSONObject data) {
+        org.json.JSONArray entries=repo.entries(data);
+        if(entries.length()>0){
+            StringBuilder recent=new StringBuilder("Registos de trabalho: ").append(entries.length());
+            int shown=Math.min(5,entries.length());
+            for(int j=entries.length()-1;j>=Math.max(0,entries.length()-shown);j--){JSONObject e=entries.optJSONObject(j);if(e!=null)recent.append("\n").append(e.optString("date")).append("  ").append(e.optString("start")).append("–").append(e.optString("end")).append("  pausa ").append(e.optInt("pause")).append(" min");}
+            return recent.toString();
+        }
         StringBuilder s=new StringBuilder();
         String[] keys={"work_entries","vacations","settings","time_balance","vacation_balance"};
         for(String k:keys) if(data.has(k)) {
@@ -110,6 +118,23 @@ public class MainActivity extends Activity {
             if(s.length()>0)s.append("\n"); s.append(k.replace('_',' ')).append(": ").append(n);
         }
         return s.length()==0?"Supabase OK":s.toString();
+    }
+
+    private void workDialog() {
+        LinearLayout box=new LinearLayout(this); box.setOrientation(LinearLayout.VERTICAL); box.setPadding(dp(20),0,dp(20),0);
+        EditText date=new EditText(this); date.setHint("AAAA-MM-DD"); date.setText(java.time.LocalDate.now().toString()); box.addView(date);
+        EditText start=new EditText(this); start.setHint("Entrada HH:MM"); start.setText("22:00"); box.addView(start);
+        EditText end=new EditText(this); end.setHint("Saída HH:MM"); end.setText("06:00"); box.addView(end);
+        EditText pause=new EditText(this); pause.setHint("Pausa (minutos)"); pause.setInputType(InputType.TYPE_CLASS_NUMBER); pause.setText("30"); box.addView(pause);
+        new AlertDialog.Builder(this).setTitle("Registar trabalho").setView(box).setNegativeButton(android.R.string.cancel,null)
+            .setPositiveButton("Guardar",(d,w)->saveWork(date.getText().toString(),start.getText().toString(),end.getText().toString(),pause.getText().toString())).show();
+    }
+    private void saveWork(String date,String start,String end,String pauseText) {
+        busy(true);
+        new Thread(()->{try{
+            int pause=Integer.parseInt(pauseText); repo.saveWork(null,date,start,end,pause);
+            runOnUiThread(()->{Toast.makeText(this,"Registo guardado",Toast.LENGTH_SHORT).show();doSync();});
+        }catch(Exception ex){runOnUiThread(()->{busy(false);status.setText("Não foi possível guardar o registo.");});}}).start();
     }
 
     private void confirmSignOut() {

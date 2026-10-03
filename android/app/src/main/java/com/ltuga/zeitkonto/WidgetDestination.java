@@ -1,13 +1,16 @@
 package com.ltuga.zeitkonto;
 
-/** Only navigation, never account data, URLs supplied by callers or clock mutations. */
+/** Native widget destinations; no remote URL is required. */
 public final class WidgetDestination {
     public static final String ACTION = "com.ltuga.zeitkonto.OPEN_WIDGET";
     public static final String EXTRA = "widget_destination";
-    public static String url(String destination) {
-        if ("calendar".equals(destination)) return NavigationPolicy.HOME + "?view=calendar";
-        if ("balances".equals(destination)) return NavigationPolicy.HOME + "?view=balances";
-        return NavigationPolicy.HOME;
+    public static final String RECORD = "record";
+    public static final String CALENDAR = "calendar";
+    public static final String BALANCES = "balances";
+    public static String destination(String value) {
+        if (CALENDAR.equals(value)) return CALENDAR;
+        if (BALANCES.equals(value)) return BALANCES;
+        return RECORD;
     }
     private WidgetDestination() {}
 }

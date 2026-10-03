@@ -42,6 +42,20 @@ public final class ZeitkontoRepository {
         return push(new JSONArray().put(change));
     }
 
+    public JSONObject deleteEntry(String id)throws Exception{
+        JSONObject change=new JSONObject().put("entity","entry").put("id",id).put("value",JSONObject.NULL)
+            .put("mutation_id",UUID.randomUUID().toString()).put("updated_at",Instant.now().toString());
+        return push(new JSONArray().put(change));
+    }
+
+    public JSONObject updateAbsence(String id,String date,String kind,String mode,int minutes)throws Exception{
+        JSONObject value=new JSONObject().put("id",id).put("date",date).put("kind",kind).put("targetMinutes",480);
+        if("holiday".equals(kind)){value.put("holidayMode",mode);if("hours".equals(mode))value.put("holidayMinutes",minutes);}
+        JSONObject change=new JSONObject().put("entity","entry").put("id",id).put("value",value)
+            .put("mutation_id",UUID.randomUUID().toString()).put("updated_at",Instant.now().toString());
+        return push(new JSONArray().put(change));
+    }
+
     private int minutesBetween(String start,String end){
         String[] a=start.split(":"),b=end.split(":");
         int x=Integer.parseInt(a[0])*60+Integer.parseInt(a[1]), y=Integer.parseInt(b[0])*60+Integer.parseInt(b[1]);

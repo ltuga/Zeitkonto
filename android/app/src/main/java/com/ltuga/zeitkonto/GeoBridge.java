@@ -19,7 +19,7 @@ final class GeoBridge {
     interface Gate { boolean unlocked(); }
     static void install(Activity activity, WebView web, Gate gate) {
         if(!WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER))return;
-        WebViewCompat.addWebMessageListener(web,"ZeitkontoLocation",Collections.singleton("https://meu-tempo-luis.ltugamatos.chatgpt.site"),
+        WebViewCompat.addWebMessageListener(web,"ZeitkontoLocation",Collections.singleton("https://szidhxybypbueiewfidn.supabase.co"),
             (view,message,origin,main,reply) -> {
                 if(!main || !gate.unlocked() || !NavigationPolicy.trusted(view.getUrl()))return;
                 String requestId="";

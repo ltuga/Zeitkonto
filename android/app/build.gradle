@@ -25,7 +25,7 @@ android {
         }
     }
     buildTypes {
-        debug { applicationIdSuffix '.test'; versionNameSuffix '-test'; debuggable false; signingConfig testStore != null ? signingConfigs.testUpdate : null }
+        debug { applicationIdSuffix '.standalone'; versionNameSuffix '-test'; debuggable false; signingConfig testStore != null ? signingConfigs.testUpdate : null }
         release { minifyEnabled false }
     }
     buildFeatures { buildConfig true }

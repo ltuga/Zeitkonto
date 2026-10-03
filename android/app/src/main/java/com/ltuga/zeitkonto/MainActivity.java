@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
     private LinearLayout root, login;
     private TextView status, summary;
     private EditText email, password;
-    private Button signIn, sync, signOut, lock, addWork;
+    private Button signIn, sync, signOut, lock, addWork, addAbsence, balances;
     private boolean unlocked = true, authenticating;
     private CancellationSignal cancellation;
     private long lastBack;
@@ -61,6 +61,8 @@ public class MainActivity extends Activity {
 
         sync=new Button(this); sync.setText(R.string.sync); sync.setOnClickListener(v->doSync()); root.addView(sync);
         addWork=new Button(this); addWork.setText("＋ Registar trabalho"); addWork.setOnClickListener(v->workDialog()); root.addView(addWork);
+        addAbsence=new Button(this); addAbsence.setText("＋ Férias / doença / descanso"); addAbsence.setOnClickListener(v->absenceDialog()); root.addView(addAbsence);
+        balances=new Button(this); balances.setText("Saldos"); balances.setOnClickListener(v->loadBalances()); root.addView(balances);
         signOut=new Button(this); signOut.setText(R.string.sign_out); signOut.setOnClickListener(v->confirmSignOut()); root.addView(signOut);
         lock=new Button(this); lock.setText(R.string.device_lock); lock.setOnClickListener(v->toggleLock()); root.addView(lock);
         Button about=new Button(this); about.setText(R.string.about); about.setOnClickListener(v->new AlertDialog.Builder(this).setTitle("Zeitkonto 0.3.0").setMessage(R.string.about_text).setPositiveButton(android.R.string.ok,null).show()); root.addView(about);
@@ -73,7 +75,7 @@ public class MainActivity extends Activity {
         boolean signed=repo.isSignedIn();
         login.setVisibility(signed?View.GONE:View.VISIBLE);
         sync.setVisibility(signed?View.VISIBLE:View.GONE);
-        signOut.setVisibility(signed?View.VISIBLE:View.GONE); addWork.setVisibility(signed?View.VISIBLE:View.GONE);
+        signOut.setVisibility(signed?View.VISIBLE:View.GONE); addWork.setVisibility(signed?View.VISIBLE:View.GONE); addAbsence.setVisibility(signed?View.VISIBLE:View.GONE); balances.setVisibility(signed?View.VISIBLE:View.GONE);
         status.setText(signed?R.string.signed_in:R.string.signed_out);
         if (!signed) summary.setText("");
     }
@@ -135,6 +137,31 @@ public class MainActivity extends Activity {
             int pause=Integer.parseInt(pauseText); repo.saveWork(null,date,start,end,pause);
             runOnUiThread(()->{Toast.makeText(this,"Registo guardado",Toast.LENGTH_SHORT).show();doSync();});
         }catch(Exception ex){runOnUiThread(()->{busy(false);status.setText("Não foi possível guardar o registo.");});}}).start();
+    }
+
+    private void absenceDialog() {
+        String[] kinds={"Férias","Descanso","Doença com baixa","Doença sem baixa"};
+        new AlertDialog.Builder(this).setTitle("Tipo de ausência").setItems(kinds,(d,which)->absenceDate(which)).show();
+    }
+    private void absenceDate(int which) {
+        EditText date=new EditText(this);date.setText(java.time.LocalDate.now().toString());date.setHint("AAAA-MM-DD");
+        new AlertDialog.Builder(this).setTitle("Data").setView(date).setNegativeButton(android.R.string.cancel,null)
+            .setPositiveButton("Guardar",(d,w)->saveAbsence(date.getText().toString(),which)).show();
+    }
+    private void saveAbsence(String date,int which) {
+        String kind=which==0?"holiday":which==1?"rest":which==2?"sick_note":"sick_no_note";
+        busy(true);new Thread(()->{try{repo.saveAbsence(date,kind,"full",0);runOnUiThread(()->{Toast.makeText(this,"Ausência guardada",Toast.LENGTH_SHORT).show();doSync();});}
+        catch(Exception ex){runOnUiThread(()->{busy(false);status.setText("Não foi possível guardar.");});}}).start();
+    }
+    private void loadBalances() {
+        busy(true);new Thread(()->{try{JSONObject b=repo.balances();runOnUiThread(()->{busy(false);showBalances(b);});}
+        catch(Exception ex){runOnUiThread(()->{busy(false);status.setText(R.string.sync_error);});}}).start();
+    }
+    private void showBalances(JSONObject b) {
+        JSONObject t=b.optJSONObject("time"),v=b.optJSONObject("vacation");StringBuilder s=new StringBuilder();
+        if(t!=null)s.append("Saldo de horas: ").append(t.optString("current_minutes","0")).append(" min");
+        if(v!=null){if(s.length()>0)s.append("\n");s.append("Férias ").append(v.optInt("year")).append(": ").append(v.optString("available_days","—")).append(" dias disponíveis");}
+        new AlertDialog.Builder(this).setTitle("Saldos").setMessage(s.length()==0?"Sem dados":s.toString()).setPositiveButton(android.R.string.ok,null).show();
     }
 
     private void confirmSignOut() {

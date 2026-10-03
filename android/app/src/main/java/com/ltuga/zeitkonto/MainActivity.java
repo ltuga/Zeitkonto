@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
     private LinearLayout root, login;
     private TextView status, summary;
     private EditText email, password;
-    private Button signIn, sync, signOut, lock, addWork, addAbsence, balances, history;
+    private Button signIn, signUp, sync, signOut, lock, addWork, addAbsence, balances, history;
     private boolean unlocked = true, authenticating;
     private CancellationSignal cancellation;
     private long lastBack;
@@ -57,7 +57,8 @@ public class MainActivity extends Activity {
         login=new LinearLayout(this); login.setOrientation(LinearLayout.VERTICAL);
         email=new EditText(this); email.setHint(R.string.email); email.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS); email.setSingleLine(true); login.addView(email);
         password=new EditText(this); password.setHint(R.string.password); password.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD); password.setSingleLine(true); login.addView(password);
-        signIn=new Button(this); signIn.setText(R.string.sign_in); signIn.setOnClickListener(v->doSignIn()); login.addView(signIn); root.addView(login);
+        signIn=new Button(this); signIn.setText(R.string.sign_in); signIn.setOnClickListener(v->doSignIn()); login.addView(signIn);
+        signUp=new Button(this); signUp.setText("Criar nova conta"); signUp.setOnClickListener(v->doSignUp()); login.addView(signUp); root.addView(login);
 
         sync=new Button(this); sync.setText(R.string.sync); sync.setOnClickListener(v->doSync()); root.addView(sync);
         addWork=new Button(this); addWork.setText("＋ Registar trabalho"); addWork.setOnClickListener(v->workDialog()); root.addView(addWork);
@@ -82,7 +83,7 @@ public class MainActivity extends Activity {
     }
 
     private void busy(boolean value) {
-        signIn.setEnabled(!value); sync.setEnabled(!value); signOut.setEnabled(!value);
+        signIn.setEnabled(!value); signUp.setEnabled(!value); sync.setEnabled(!value); signOut.setEnabled(!value);
         if (value) status.setText(R.string.syncing);
     }
 
@@ -91,7 +92,18 @@ public class MainActivity extends Activity {
         busy(true);
         new Thread(()->{
             try { repo.signIn(e,p); runOnUiThread(()->{ password.setText(""); refreshUi(); doSync(); }); }
-            catch(Exception ex){ runOnUiThread(()->{ busy(false); status.setText(R.string.login_error); }); }
+            catch(Exception ex){ runOnUiThread(()->{ busy(false); status.setText(ex.getMessage()==null?getString(R.string.login_error):ex.getMessage()); }); }
+        }).start();
+    }
+
+    private void doSignUp() {
+        final String e=email.getText().toString(), p=password.getText().toString();
+        busy(true);
+        new Thread(()->{
+            try {
+                JSONObject result=repo.signUp(e,p);
+                runOnUiThread(()->{ busy(false); password.setText(""); new AlertDialog.Builder(this).setTitle("Conta criada").setMessage(result.has("access_token")?"Conta criada e sessão iniciada.":"Conta criada. Confirma o email recebido antes de entrares.").setPositiveButton(android.R.string.ok,(d,w)->refreshUi()).show(); });
+            } catch(Exception ex) { runOnUiThread(()->{ busy(false); status.setText(ex.getMessage()==null?"Não foi possível criar a conta.":ex.getMessage()); }); }
         }).start();
     }
 

@@ -146,11 +146,24 @@ public class MainActivity extends Activity {
     private void absenceDate(int which) {
         EditText date=new EditText(this);date.setText(java.time.LocalDate.now().toString());date.setHint("AAAA-MM-DD");
         new AlertDialog.Builder(this).setTitle("Data").setView(date).setNegativeButton(android.R.string.cancel,null)
-            .setPositiveButton("Guardar",(d,w)->saveAbsence(date.getText().toString(),which)).show();
+            .setPositiveButton("Continuar",(d,w)->{if(which==0)holidayMode(date.getText().toString());else saveAbsence(date.getText().toString(),which,"full",0);}).show();
     }
-    private void saveAbsence(String date,int which) {
+    private void holidayMode(String date){
+        String[] modes={"Dia completo","Meio dia","Horas"};
+        new AlertDialog.Builder(this).setTitle("Duração das férias").setItems(modes,(d,w)->{
+            if(w==0)saveAbsence(date,0,"full",0);
+            else if(w==1)saveAbsence(date,0,"half",0);
+            else holidayHours(date);
+        }).show();
+    }
+    private void holidayHours(String date){
+        EditText hours=new EditText(this);hours.setHint("Horas (1–8)");hours.setInputType(InputType.TYPE_CLASS_NUMBER);
+        new AlertDialog.Builder(this).setTitle("Horas de férias").setView(hours).setNegativeButton(android.R.string.cancel,null)
+            .setPositiveButton("Guardar",(d,w)->{try{int h=Integer.parseInt(hours.getText().toString());if(h<1||h>8)throw new Exception();saveAbsence(date,0,"hours",h*60);}catch(Exception e){Toast.makeText(this,"Indica entre 1 e 8 horas.",Toast.LENGTH_SHORT).show();}}).show();
+    }
+    private void saveAbsence(String date,int which,String mode,int minutes) {
         String kind=which==0?"holiday":which==1?"rest":which==2?"sick_note":"sick_no_note";
-        busy(true);new Thread(()->{try{repo.saveAbsence(date,kind,"full",0);runOnUiThread(()->{Toast.makeText(this,"Ausência guardada",Toast.LENGTH_SHORT).show();doSync();});}
+        busy(true);new Thread(()->{try{repo.saveAbsence(date,kind,mode,minutes);runOnUiThread(()->{Toast.makeText(this,"Ausência guardada",Toast.LENGTH_SHORT).show();doSync();});}
         catch(Exception ex){runOnUiThread(()->{busy(false);status.setText("Não foi possível guardar.");});}}).start();
     }
     private void loadBalances() {
@@ -159,7 +172,7 @@ public class MainActivity extends Activity {
     }
     private void showBalances(JSONObject b) {
         JSONObject t=b.optJSONObject("time"),v=b.optJSONObject("vacation");StringBuilder s=new StringBuilder();
-        if(t!=null)s.append("Saldo de horas: ").append(t.optString("current_minutes","0")).append(" min");
+        if(t!=null){int m=t.optInt("current_minutes",0);s.append("Saldo de horas: ").append(m/60).append("h ").append(Math.abs(m%60)).append("min");}
         if(v!=null){if(s.length()>0)s.append("\n");s.append("Férias ").append(v.optInt("year")).append(": ").append(v.optString("available_days","—")).append(" dias disponíveis");}
         new AlertDialog.Builder(this).setTitle("Saldos").setMessage(s.length()==0?"Sem dados":s.toString()).setPositiveButton(android.R.string.ok,null).show();
     }

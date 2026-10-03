@@ -9,7 +9,10 @@ android {
         minSdk 30
         targetSdk 36
         versionCode 6
-        versionName '0.2.1'
+        versionName '0.3.0'
+        buildConfigField 'String', 'SUPABASE_URL', '"https://szidhxybypbueiewfidn.supabase.co"'
+        // Publishable keys are intentionally safe for public mobile clients; RLS protects user data.
+        buildConfigField 'String', 'SUPABASE_PUBLISHABLE_KEY', '"sb_publishable_vjs6DElKu_O71aiLEg9BZQ_8oppS5Cy"'
     }
     signingConfigs {
         testUpdate {
@@ -25,6 +28,7 @@ android {
         debug { applicationIdSuffix '.test'; versionNameSuffix '-test'; debuggable false; signingConfig testStore != null ? signingConfigs.testUpdate : null }
         release { minifyEnabled false }
     }
+    buildFeatures { buildConfig true }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -34,5 +38,4 @@ android {
 
 dependencies {
     implementation 'com.google.android.gms:play-services-location:21.3.0'
-    implementation 'androidx.webkit:webkit:1.12.1'
 }

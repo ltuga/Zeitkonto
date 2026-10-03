@@ -47,6 +47,26 @@ public final class ZeitkontoRepository {
         int x=Integer.parseInt(a[0])*60+Integer.parseInt(a[1]), y=Integer.parseInt(b[0])*60+Integer.parseInt(b[1]);
         if(y<x)y+=1440; return y-x;
     }
+    public JSONObject balances()throws Exception{
+        JSONObject out=new JSONObject();
+        JSONArray time=supabase.get("/rest/v1/time_balance?select=*&limit=1");
+        JSONArray vacation=supabase.get("/rest/v1/vacation_balance?select=*&order=year.desc&limit=1");
+        if(time.length()>0)out.put("time",time.getJSONObject(0));
+        if(vacation.length()>0)out.put("vacation",vacation.getJSONObject(0));
+        return out;
+    }
+
+    public JSONArray absences(JSONObject sync){
+        JSONArray rows=sync.optJSONArray("rows"),out=new JSONArray();if(rows==null)return out;
+        for(int i=0;i<rows.length();i++){
+            JSONObject row=rows.optJSONObject(i);
+            if(row==null||!"entry".equals(row.optString("entity"))||!row.isNull("deleted_at"))continue;
+            JSONObject value=row.optJSONObject("value");
+            if(value!=null&&!"work".equals(value.optString("kind")))out.put(value);
+        }
+        return out;
+    }
+
     public JSONArray entries(JSONObject sync){
         JSONArray rows=sync.optJSONArray("rows"),out=new JSONArray(); if(rows==null)return out;
         for(int i=0;i<rows.length();i++){JSONObject r=rows.optJSONObject(i); if(r==null||!"entry".equals(r.optString("entity"))||!r.isNull("deleted_at"))continue;

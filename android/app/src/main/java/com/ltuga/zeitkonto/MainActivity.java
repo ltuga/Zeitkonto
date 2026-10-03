@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
     private LinearLayout root, login;
     private TextView status, summary;
     private EditText email, password;
-    private Button signIn, sync, signOut, lock, addWork, addAbsence, balances;
+    private Button signIn, sync, signOut, lock, addWork, addAbsence, balances, history;
     private boolean unlocked = true, authenticating;
     private CancellationSignal cancellation;
     private long lastBack;
@@ -63,6 +63,7 @@ public class MainActivity extends Activity {
         addWork=new Button(this); addWork.setText("＋ Registar trabalho"); addWork.setOnClickListener(v->workDialog()); root.addView(addWork);
         addAbsence=new Button(this); addAbsence.setText("＋ Férias / doença / descanso"); addAbsence.setOnClickListener(v->absenceDialog()); root.addView(addAbsence);
         balances=new Button(this); balances.setText("Saldos"); balances.setOnClickListener(v->loadBalances()); root.addView(balances);
+        history=new Button(this); history.setText("Histórico / calendário"); history.setOnClickListener(v->loadHistory()); root.addView(history);
         signOut=new Button(this); signOut.setText(R.string.sign_out); signOut.setOnClickListener(v->confirmSignOut()); root.addView(signOut);
         lock=new Button(this); lock.setText(R.string.device_lock); lock.setOnClickListener(v->toggleLock()); root.addView(lock);
         Button about=new Button(this); about.setText(R.string.about); about.setOnClickListener(v->new AlertDialog.Builder(this).setTitle("Zeitkonto 0.3.0").setMessage(R.string.about_text).setPositiveButton(android.R.string.ok,null).show()); root.addView(about);
@@ -75,7 +76,7 @@ public class MainActivity extends Activity {
         boolean signed=repo.isSignedIn();
         login.setVisibility(signed?View.GONE:View.VISIBLE);
         sync.setVisibility(signed?View.VISIBLE:View.GONE);
-        signOut.setVisibility(signed?View.VISIBLE:View.GONE); addWork.setVisibility(signed?View.VISIBLE:View.GONE); addAbsence.setVisibility(signed?View.VISIBLE:View.GONE); balances.setVisibility(signed?View.VISIBLE:View.GONE);
+        signOut.setVisibility(signed?View.VISIBLE:View.GONE); addWork.setVisibility(signed?View.VISIBLE:View.GONE); addAbsence.setVisibility(signed?View.VISIBLE:View.GONE); balances.setVisibility(signed?View.VISIBLE:View.GONE); history.setVisibility(signed?View.VISIBLE:View.GONE);
         status.setText(signed?R.string.signed_in:R.string.signed_out);
         if (!signed) summary.setText("");
     }
@@ -175,6 +176,38 @@ public class MainActivity extends Activity {
         if(t!=null){int m=t.optInt("current_minutes",0);s.append("Saldo de horas: ").append(m/60).append("h ").append(Math.abs(m%60)).append("min");}
         if(v!=null){if(s.length()>0)s.append("\n");s.append("Férias ").append(v.optInt("year")).append(": ").append(v.optString("available_days","—")).append(" dias disponíveis");}
         new AlertDialog.Builder(this).setTitle("Saldos").setMessage(s.length()==0?"Sem dados":s.toString()).setPositiveButton(android.R.string.ok,null).show();
+    }
+
+    private void loadHistory(){
+        busy(true);new Thread(()->{try{JSONObject data=repo.load();runOnUiThread(()->{busy(false);showHistory(data);});}
+        catch(Exception ex){runOnUiThread(()->{busy(false);status.setText(R.string.sync_error);});}}).start();
+    }
+    private void showHistory(JSONObject data){
+        org.json.JSONArray rows=data.optJSONArray("rows");java.util.ArrayList<JSONObject> items=new java.util.ArrayList<>();
+        if(rows!=null)for(int i=0;i<rows.length();i++){JSONObject r=rows.optJSONObject(i);if(r==null||!"entry".equals(r.optString("entity"))||!r.isNull("deleted_at"))continue;JSONObject v=r.optJSONObject("value");if(v!=null)items.add(v);}
+        items.sort((a,b)->b.optString("date").compareTo(a.optString("date")));
+        String[] labels=new String[Math.min(items.size(),60)];
+        for(int i=0;i<labels.length;i++){JSONObject v=items.get(i);String k=v.optString("kind");String detail="work".equals(k)?v.optString("start")+"–"+v.optString("end"):"holiday".equals(k)?"Férias":"rest".equals(k)?"Descanso":"Doença";labels[i]=v.optString("date")+"   "+detail;}
+        new AlertDialog.Builder(this).setTitle("Histórico").setItems(labels,(d,w)->entryActions(items.get(w))).setNegativeButton(android.R.string.cancel,null).show();
+    }
+    private void entryActions(JSONObject item){
+        String[] actions={"Editar","Eliminar"};
+        new AlertDialog.Builder(this).setTitle(item.optString("date")).setItems(actions,(d,w)->{if(w==0)editEntry(item);else confirmDelete(item.optString("id"));}).show();
+    }
+    private void editEntry(JSONObject item){
+        if("work".equals(item.optString("kind"))){
+            LinearLayout box=new LinearLayout(this);box.setOrientation(LinearLayout.VERTICAL);box.setPadding(dp(20),0,dp(20),0);
+            EditText date=new EditText(this);date.setText(item.optString("date"));box.addView(date);
+            EditText start=new EditText(this);start.setText(item.optString("start"));box.addView(start);
+            EditText end=new EditText(this);end.setText(item.optString("end"));box.addView(end);
+            EditText pause=new EditText(this);pause.setInputType(InputType.TYPE_CLASS_NUMBER);pause.setText(String.valueOf(item.optInt("pause")));box.addView(pause);
+            new AlertDialog.Builder(this).setTitle("Editar trabalho").setView(box).setNegativeButton(android.R.string.cancel,null)
+                .setPositiveButton("Guardar",(d,w)->{busy(true);new Thread(()->{try{repo.saveWork(item.optString("id"),date.getText().toString(),start.getText().toString(),end.getText().toString(),Integer.parseInt(pause.getText().toString()));runOnUiThread(this::doSync);}catch(Exception ex){runOnUiThread(()->{busy(false);status.setText("Não foi possível editar.");});}}).start();}).show();
+        } else Toast.makeText(this,"Edição de ausências será feita no calendário.",Toast.LENGTH_SHORT).show();
+    }
+    private void confirmDelete(String id){
+        new AlertDialog.Builder(this).setTitle("Eliminar registo?").setMessage("O registo deixa de contar nos saldos após sincronizar.").setNegativeButton(android.R.string.cancel,null)
+            .setPositiveButton("Eliminar",(d,w)->{busy(true);new Thread(()->{try{repo.deleteEntry(id);runOnUiThread(this::doSync);}catch(Exception ex){runOnUiThread(()->{busy(false);status.setText("Não foi possível eliminar.");});}}).start();}).show();
     }
 
     private void confirmSignOut() {
